@@ -1,0 +1,14 @@
+version: '3'
+services:
+  bootstrapper:
+    image: "nembery/panos_bootstrapper:v0.4"
+    ports:
+    - "5000:5000"
+  aframe:
+    image: "nembery/aframe:v1.2"
+    ports:
+     - "8088:8000"
+    volumes:
+     - ./aframe/imports:/app/aframe/conf/imports
+     - ./aframe/aframe.conf:/app/aframe/conf/aframe.conf
+     - ./aframe/db.sqlite3:/app/aframe/db.sqlite3
