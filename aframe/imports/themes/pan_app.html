@@ -7,9 +7,23 @@
     <title>{{ screen.name }}</title>
     <script type="text/javascript" src="{% static 'js/jquery-1.12.4.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}"></script>
-    <link href="{% static 'images/a-frame-logo.png' %}" rel="shortcut icon">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/pan_favicon.ico' %}">
 
     <script type="text/javascript" src="{% static 'js/a_frame_utils.js' %}"></script>
+    <script type="text/javascript">
+        function show_menu_content(content_id) {
+            $('[id ^= screen_menu_content_]').each(function (i, v) {
+                let vj = $(v);
+                console.log(v);
+                console.log(vj.css('display'));
+                if (vj.css('display') !== 'none' && vj.attr('id') !== content_id) {
+                    vj.slideUp();
+                }
+            });
+            let panel = $('#' + content_id);
+            panel.slideDown();
+        }
+    </script>
     {% block scripts %}{% endblock %}
     <style>
         * {
@@ -64,16 +78,17 @@
 
         h2 {
             color: #666;
-            padding-left: 25px;
             padding-top: 10px;
+            text-align: left;
+            margin-left: 450px;
         }
 
         h3 {
-            color: darkblue;
+            color: #fff;
+            padding: 5px;
         }
 
         .screen_box {
-            border-top: 8px solid #0e9ac8;
             display: none;
             background: #fff;
             min-width: 450px;
@@ -191,17 +206,18 @@
         }
 
         .overlay_box table tr td {
-        {#background: #eee;#} padding: 10px;
+            padding: 10px;
             margin-top: 10px;
         }
 
         .overlay_menu {
-        {#border-top: 8px solid #0e9ac8;#} font-size: 1.7em;
+            font-size: 1.7em;
             padding: 8px;
             color: #808080;
             position: relative;
             min-width: 160px;
             margin-top: -8px;
+            border-top: 8px solid #0e9ac8;
         }
 
         .overlay_close {
@@ -223,6 +239,17 @@
             color: #666666;
         }
 
+        #nav_logo {
+            background-image: url("{% static 'images/logo-pan-bg.png' %}");
+            background-position: 5px 2px;
+            background-repeat: no-repeat;
+            background-size: 70px;
+            height: 90px;
+            width: 90px;
+            position: absolute;
+            opacity: 0.5;
+        }
+
         .nav_header {
             background-color: #444;
             height: 55px;
@@ -238,10 +265,10 @@
             color: white;
             font-size: 175%;
             font-weight: bold;
-            /* padding: 5px; */
             vertical-align: middle;
             padding-top: 8px;
-            margin-left: 20px;
+            margin-left: 30px;
+            position: absolute;
         }
 
         .template_title {
@@ -252,27 +279,29 @@
 
         .global_menu_ul {
             list-style: none;
-            margin-left: 15px;
             padding: 5px;
             font-size: 100%;
             min-width: 300px;
+            height: 100%;
+
         }
 
         .global_menu_ul li {
-        {#display: inline;#}{#padding-left: 25px;#} padding: 0px 10px 10px 10px;
-        {#padding-right: 25px;#} font-size: 180%;
+            padding: 0px 10px 10px 10px;
+            font-size: 180%;
             font-weight: bold;
         }
 
         .global_menu_ul li a {
             text-decoration: none;
             font-weight: normal;
+            color: #fff;
         }
 
         #footer {
             position: absolute;
             bottom: 5px;
-            left: 5px;
+            left: 80px;
             text-align: left;
         }
 
@@ -284,16 +313,57 @@
             font-size: medium;
             max-width: 800px;
         }
+
+        #screen_menu {
+            float: left;
+            background: #444;
+            padding: 10px;
+            height: 100%;
+            color: #fff;
+            min-width: 290px;
+        }
+
+        #screen_menu ul {
+            list-style: none;
+            padding: 5px;
+            font-size: 100%;
+
+        }
+
+        #screen_menu ul li {
+            padding: 0px 10px 10px 10px;
+        }
+
+        #screen_menu ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: normal;
+        }
     </style>
 </head>
 <body>
 <div class="nav_header">
+    <div id="nav_logo"></div>
     <div class="nav_header_title">
-        {{ screen.name |upper }}
+        <div id="screen_title">{{ screen.tag |upper }}</div>
     </div>
 </div>
-
+<div id="screen_menu">
+    {% for t in tags %}
+    <h3 onclick="show_menu_content('screen_menu_content_{{ t|slugify }}')">{{ t }}</h3>
+    {% if screen.tag == t %}
+    <ul id="screen_menu_content_{{ t|slugify }}">
+        {% else %}
+        <ul id="screen_menu_content_{{ t|slugify }}" style="display:none">
+            {% endif %}
+            {% for s in screens %}
+            {% if s.tag == t %}
+            <li><a href="/screens/{{ s.id }}">{{ s.name }}</a></li>
+            {% endif %}
+            {% endfor %}
+        </ul>
+        {% endfor %}
+</div>
 {% block content %}{% endblock %}
-
 </body>
 </html>
