@@ -11,18 +11,18 @@
 
     <script type="text/javascript" src="{% static 'js/a_frame_utils.js' %}"></script>
     <script type="text/javascript">
-        function show_menu_content(content_id) {
-            $('[id ^= screen_menu_content_]').each(function (i, v) {
-                let vj = $(v);
-                console.log(v);
-                console.log(vj.css('display'));
-                if (vj.css('display') !== 'none' && vj.attr('id') !== content_id) {
-                    vj.slideUp();
-                }
-            });
-            let panel = $('#' + content_id);
-            panel.slideDown();
-        }
+    function show_menu_content(content_id) {
+        $('[id ^= screen_menu_content_]').each(function(i,v) {
+            let vj = $(v);
+            console.log(v);
+            console.log(vj.css('display'));
+            if (vj.css('display') !== 'none' && vj.attr('id') !== content_id) {
+                vj.slideUp();
+            }
+        });
+        let panel = $('#' + content_id);
+        panel.slideDown();
+    }
     </script>
     {% block scripts %}{% endblock %}
     <style>
@@ -206,12 +206,12 @@
         }
 
         .overlay_box table tr td {
-            padding: 10px;
+        {#background: #eee;#} padding: 10px;
             margin-top: 10px;
         }
 
         .overlay_menu {
-            font-size: 1.7em;
+        {#border-top: 8px solid #0e9ac8;#} font-size: 1.7em;
             padding: 8px;
             color: #808080;
             position: relative;
@@ -237,6 +237,12 @@
         .overlay_menu a:hover, .overlay_menu a, .overlay_menu a:visited {
             text-decoration: none;
             color: #666666;
+        }
+
+        .overlay_help {
+            width: 410px;
+            font-size: 70%;
+            padding: 10px;
         }
 
         #nav_logo {
@@ -287,8 +293,8 @@
         }
 
         .global_menu_ul li {
-            padding: 0px 10px 10px 10px;
-            font-size: 180%;
+        {#display: inline;#}{#padding-left: 25px;#} padding: 0px 10px 10px 10px;
+        {#padding-right: 25px;#} font-size: 180%;
             font-weight: bold;
         }
 
@@ -327,7 +333,7 @@
             list-style: none;
             padding: 5px;
             font-size: 100%;
-
+            {#height: 100%;#}
         }
 
         #screen_menu ul li {
@@ -345,24 +351,24 @@
 <div class="nav_header">
     <div id="nav_logo"></div>
     <div class="nav_header_title">
-        <div id="screen_title">{{ screen.tag |upper }}</div>
+        <div id="screen_title">{{  screen.tag |upper }}</div>
     </div>
 </div>
 <div id="screen_menu">
     {% for t in tags %}
-    <h3 onclick="show_menu_content('screen_menu_content_{{ t|slugify }}')">{{ t }}</h3>
-    {% if screen.tag == t %}
-    <ul id="screen_menu_content_{{ t|slugify }}">
+        <h3 onclick="show_menu_content('screen_menu_content_{{ t|slugify }}')">{{ t }}</h3>
+        {% if screen.tag == t %}
+        <ul id="screen_menu_content_{{ t|slugify }}">
         {% else %}
         <ul id="screen_menu_content_{{ t|slugify }}" style="display:none">
-            {% endif %}
-            {% for s in screens %}
+        {% endif %}
+        {% for s in screens %}
             {% if s.tag == t %}
-            <li><a href="/screens/{{ s.id }}">{{ s.name }}</a></li>
+                <li><a href="/screens/{{ s.id }}">{{ s.name }}</a></li>
             {% endif %}
-            {% endfor %}
-        </ul>
         {% endfor %}
+        </ul>
+    {% endfor %}
 </div>
 {% block content %}{% endblock %}
 </body>
