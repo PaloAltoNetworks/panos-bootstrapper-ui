@@ -1,13 +1,13 @@
 version: '3'
 services:
   bootstrapper:
-    image: "nembery/panos_bootstrapper:v0.6"
+    image: "nembery/panos_bootstrapper:v0.7"
     ports:
     - "5000:5000"
     volumes:
      - ./content_updates:/var/tmp/content_updates/
   aframe:
-    image: "nembery/aframe:v1.3"
+    image: "nembery/aframe:v1.4"
     ports:
      - "8088:8000"
     volumes:
