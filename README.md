@@ -30,4 +30,36 @@ docker-compose up
 
 ### Examples 
 
-Examples can be found in the project wiki on GitHub. 
+Examples can be found in the project documentation on here: https://panos-bootstrapper.readthedocs.io/en/latest/ 
+
+
+### Troubleshooting
+
+If you have issues pulling the images, try to log in to the docker CLI
+tool using:
+
+```bash
+docker login
+```
+
+Verify basic docker functionality with:
+
+```bash
+docker run hello-world
+```
+
+You can also force the recreation of all the service using these commands:
+
+```bash
+cd panos-bootstrapper-ui
+git pull
+docker-compose up --force-rebuild
+```
+
+If you aren't using `git` then download the `zip` archive again 
+and issuing the following
+
+```bash
+docker-compose up --force-rebuild
+```
+
