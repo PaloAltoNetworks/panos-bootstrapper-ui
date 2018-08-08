@@ -10,7 +10,7 @@ For details about the bootstrapping process, refer to the official
 
 ### Installation
 
-1. Install docker
+1. Install docker and docker-compose
 
 2. clone or download this repository
 

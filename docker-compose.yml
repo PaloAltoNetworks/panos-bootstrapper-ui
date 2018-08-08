@@ -3,7 +3,7 @@ services:
   bootstrapper:
     image: "nembery/panos_bootstrapper:v0.8.2"
     ports:
-    - "5000:5000"
+    - "127.0.0.1:5001:5000"
     volumes:
      - ./content_updates:/var/tmp/content_updates/
   aframe:
@@ -14,7 +14,7 @@ services:
      - ./aframe/imports:/app/aframe/conf/imports
      - ./aframe/aframe.conf:/app/aframe/conf/aframe.conf
   content_downloader:
-    image: "nembery/panos_content_downloader:v0.1"
+    image: "nembery/panos_content_downloader:v0.2"
     ports:
      - "5003:5003"
     volumes:
