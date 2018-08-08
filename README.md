@@ -15,7 +15,7 @@ For details about the bootstrapping process, refer to the official
 2. clone or download this repository
 
 ```bash
-git clone git@github.com:PaloAltoNetworks/panos-bootstrapper-ui.git
+git clone https://github.com/PaloAltoNetworks/panos-bootstrapper-ui.git
 
 ```
 
