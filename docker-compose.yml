@@ -14,7 +14,7 @@ services:
      - ./aframe/imports:/app/aframe/conf/imports
      - ./aframe/aframe.conf:/app/aframe/conf/aframe.conf
   content_downloader:
-    image: "nembery/panos_content_downloader:v0.2"
+    image: "nembery/panos_content_downloader:v0.3"
     ports:
      - "5003:5003"
     volumes:
