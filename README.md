@@ -56,8 +56,8 @@ git pull
 docker-compose up --force-rebuild
 ```
 
-If you aren't using `git` then download the `zip` archive again 
-and issuing the following
+If you are not using `git` then download the `zip` archive again 
+and issue the following:
 
 ```bash
 docker-compose up --force-rebuild
