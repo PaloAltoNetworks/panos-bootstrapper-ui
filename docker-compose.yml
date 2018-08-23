@@ -14,8 +14,15 @@ services:
      - ./aframe/imports:/app/aframe/conf/imports
      - ./aframe/aframe.conf:/app/aframe/conf/aframe.conf
   content_downloader:
-    image: "nembery/panos_content_downloader:v0.3"
+    image: "nembery/panos_content_downloader:v0.7"
     ports:
      - "5003:5003"
     volumes:
       - ./content_updates:/var/tmp/content_updates/
+  welcome:
+    image: alpine
+    depends_on:
+      - aframe
+    command: sh -c 'chmod +x /tmp/w/wait-for.sh && /tmp/w/wait-for.sh aframe:8000 -- sleep 5 && cat /tmp/w/welcome.txt'
+    volumes:
+      - ./welcome:/tmp/w
