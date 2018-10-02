@@ -22,7 +22,7 @@ git clone https://github.com/PaloAltoNetworks/panos-bootstrapper-ui.git
 3. Execute the docker-compose up command
 
 ```bash
-cd panos_bootstrapper_ui
+cd panos-bootstrapper-ui
 docker-compose up
 ```
 
@@ -63,3 +63,34 @@ and issue the following:
 docker-compose up --force-rebuild
 ```
 
+If you are still having problems, you can try these steps as a last resort
+
+```bash
+# Delete every Docker containers
+# Must be run first because images are attached to containers
+docker rm -f $(docker ps -a -q)
+
+# Delete every Docker image
+docker rmi -f $(docker images -q)
+```
+
+To completely start over with docker and remove all cached content and rebuild the database, try this:
+
+```bash
+# enter the bootstrapper-ui directory
+cd panos-bootstrapper-ui
+# ensure all containers and networks are removed
+docker-compose down
+# push directory into /var/lib
+pushd /var/lib
+# stop docker service
+sudo service docker stop
+# nuke the docker directory (not for the faint of heart)
+sudo mv docker docker.nuke
+# restart docker
+sudo docker docker start
+# jump back to our bootstrapper-ui dir
+popd
+# bring up the containers as normal by rebuilding all layers, inages, and containers
+docker-compose up
+```

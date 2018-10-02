@@ -23,6 +23,6 @@ services:
     image: alpine
     depends_on:
       - aframe
-    command: sh -c 'chmod +x /tmp/w/wait-for.sh && /tmp/w/wait-for.sh aframe:8000 -- sleep 5 && cat /tmp/w/welcome.txt'
+    command: sh -c 'chmod +x /tmp/w/wait-for.sh && /tmp/w/wait-for.sh aframe:8000 -- sleep 10 && cat /tmp/w/welcome.txt'
     volumes:
       - ./welcome:/tmp/w
