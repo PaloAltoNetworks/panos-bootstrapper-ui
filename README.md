@@ -28,6 +28,18 @@ docker-compose up
 
 4. Browse to http://localhost:8088
 
+### Upgrading to the latest version
+
+Upgrading to the latest version should be quick and easy:
+
+```bash
+cd panos-bootstrapper-ui
+git pull
+docker-compose up --force-recreate
+```
+
+
+
 ### Examples 
 
 Examples can be found in the project documentation on here: https://panos-bootstrapper.readthedocs.io/en/latest/ 
@@ -53,14 +65,14 @@ You can also force the recreation of all the service using these commands:
 ```bash
 cd panos-bootstrapper-ui
 git pull
-docker-compose up --force-rebuild
+docker-compose up --force-recreate
 ```
 
 If you are not using `git` then download the `zip` archive again 
 and issue the following:
 
 ```bash
-docker-compose up --force-rebuild
+docker-compose up --force-recreate
 ```
 
 If you are still having problems, you can try these steps as a last resort
@@ -74,7 +86,7 @@ docker rm -f $(docker ps -a -q)
 docker rmi -f $(docker images -q)
 ```
 
-To completely start over with docker and remove all cached content and rebuild the database, try this:
+To completely start over with docker and remove all cached content and recreate the database, try this:
 
 ```bash
 # enter the bootstrapper-ui directory
@@ -91,6 +103,6 @@ sudo mv docker docker.nuke
 sudo docker docker start
 # jump back to our bootstrapper-ui dir
 popd
-# bring up the containers as normal by rebuilding all layers, inages, and containers
+# bring up the containers as normal by recreateing all layers, inages, and containers
 docker-compose up
 ```
