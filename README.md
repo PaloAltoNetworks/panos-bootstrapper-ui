@@ -100,7 +100,7 @@ sudo service docker stop
 # nuke the docker directory (not for the faint of heart)
 sudo mv docker docker.nuke
 # restart docker
-sudo docker docker start
+sudo service docker start
 # jump back to our bootstrapper-ui dir
 popd
 # bring up the containers as normal by recreateing all layers, inages, and containers
