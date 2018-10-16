@@ -78,7 +78,7 @@ docker-compose up --force-recreate
 If you are still having problems, you can try these steps as a last resort
 
 ```bash
-# Delete every Docker containers
+# Delete every Docker container
 # Must be run first because images are attached to containers
 docker rm -f $(docker ps -a -q)
 
