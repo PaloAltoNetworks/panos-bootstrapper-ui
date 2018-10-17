@@ -1,6 +1,6 @@
-# PanOS Bootstrapper UI
+# Pan-OS Bootstrapper UI
 
-This project will quickly spin up the PanOS bootstrapper service and a simple UI to consume the bootstrapper API. Using
+This project will quickly spin up the Pan-OS bootstrapper service and a simple UI to consume the bootstrapper API. Using
 this tool, an architect or designer can create and manage the templates necessary to configure a Palo Alto Networks
 device upon first boot. A fully customized UI can then use those templates to allow an operator to input only those 
 variables necessary to compile those templates into a bootstrap package. 
