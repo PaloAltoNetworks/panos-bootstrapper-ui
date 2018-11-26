@@ -7,7 +7,7 @@ services:
     volumes:
      - ./content_updates:/var/tmp/content_updates/
   aframe:
-    image: "nembery/aframe:v1.4.8.1"
+    image: "nembery/aframe:latest"
     ports:
      - "8088:8000"
     volumes:
