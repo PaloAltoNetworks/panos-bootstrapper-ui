@@ -1,0 +1,45 @@
+{% extends "bootstrapper/base.html" %}
+
+{% block content %}
+
+{% if form.errors %}
+<div class="alert alert-dismissible alert-danger">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Oh snap!</strong>
+    Your username and password didn't match. Please try again.
+</div>
+{% endif %}
+
+{% if next %}
+{% if user.is_authenticated %}
+<p>Your account doesn't have access to this page. To proceed,
+    please login with an account that has access.</p>
+{% else %}
+<p>Please login to see this page.</p>
+{% endif %}
+{% endif %}
+
+<div class="card border-secondary mb-1 shadow-lg rounded">
+    <div class="card-header bg-secondary text-white">Login</div>
+    <div class="card-body">
+        <h4 class="card-title">Enter Authentication</h4>
+        <p class="card-text">
+        <form method="post" action="{% url 'login' %}">
+            {% csrf_token %}
+            <table class="table">
+                <tr>
+                    <td>{{ form.username.label_tag }}</td>
+                    <td>{{ form.username }}</td>
+                </tr>
+                <tr>
+                    <td>{{ form.password.label_tag }}</td>
+                    <td>{{ form.password }}</td>
+                </tr>
+            </table>
+            <button type="submit" class="btn btn-secondary">Login</button>
+            <input type="hidden" name="next" value="{{ next }}">
+        </form>
+    </div>
+</div>
+
+{% endblock %}

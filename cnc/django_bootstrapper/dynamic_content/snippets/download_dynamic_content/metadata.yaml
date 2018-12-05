@@ -1,0 +1,42 @@
+name: download_dynamic_content
+label: Download Dynamic Content
+description: Download Dynamic Content from the Palo Alto Support Site4
+type: template
+extends:
+variables:
+  - name: username
+    description: Username
+    default: user@paloaltonetworks.com
+    type_hint: text
+  - name: password
+    description: Password
+    default:
+    type_hint: password
+  - name: package
+    description: Package Type
+    default: appthreat
+    type_hint: dropdown
+    dd_list:
+      - key: Application Threat
+        value: appthreat
+      - key: Application
+        value: app
+      - key: Antivirus
+        value: antivirus
+      - key: Wildfire
+        value: wildfire2
+  - name: force_update
+    description: Force pulling new package
+    default: yes
+    type_hint: dropdown
+    dd_list:
+      - key: Yes
+        value: yes
+      - key: No
+        value: no
+
+snippets:
+  - name: cd_payload
+    path: download_content
+    file: conf.j2
+

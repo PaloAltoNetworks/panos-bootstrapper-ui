@@ -1,0 +1,59 @@
+name: buid_bootstrap
+label: Build Bootstrap
+description: Payload to build a simple bootstrap archive
+type: service
+extends:
+variables:
+  - name: email
+    description: blah
+    default:
+    type_hint: email
+  - name: number
+    description: blah
+    default:
+    type_hint: number
+  - name: generic ip
+    description: blah
+    default:
+    type_hint: ip
+  - name: query_tag
+    description: Search Tag
+    default: query_tag
+    type_hint: text
+  - name: hashes
+    description: List of hashes
+    default:
+    type_hint: text_area
+  - name: output
+    description: Output Format
+    default: text
+    type_hint: dropdown
+    dd_list:
+      - key: Text
+        value: text
+      - key: Elasticsearch
+        value: elasticsearch
+  - name: radio test
+    description: Output Format
+    default: text
+    type_hint: radio
+    rad_list:
+      - key: Text
+        value: text
+      - key: Elasticsearch
+        value: elasticsearch
+  - name: hash_type
+    description: Format of Hashes
+    default: "md5"
+    type_hint: dropdown
+    dd_list:
+      - key: MD5
+        value: md5
+      - key: SHA256
+        value: sha256
+      - key: SHA1
+        value: sha1
+
+snippets:
+  - name: tort-request
+    file: tort-payload.j2

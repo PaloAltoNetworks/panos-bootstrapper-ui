@@ -1,0 +1,75 @@
+{% load static %}
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CNC Tools</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/pan_favicon.ico' %}">
+    <link href="{% static 'css/bootstrap.css' %}" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="nav-brand" href="http://paloaltonetworks.com">
+        <img src="{% static 'images/logo-pan-bg.png' %}" alt="PAN" style="height: 30px; width: 50px;"/>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02"
+            aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor02">
+
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbardrop3" data-toggle="dropdown">
+                    Bootstrapper
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/bootstrapper">Create Bootstrap Archive</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbardrop2" data-toggle="dropdown">
+                    Dynamic Content
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/dynamic_content">Download Dynamic Content</a>
+                </div>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbardrop4" data-toggle="dropdown">
+                    Documentation
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="https://panos-bootstrapper.readthedocs.io/en/latest/">
+                        Pan-OS Bootstrapper Documentation</a>
+                    <a class="dropdown-item" href="http://github.com/paloaltonetworks/panos-bootstrapper">Github Repository</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div id="page-content-wrapper">
+    <div class="page-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 my-5">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

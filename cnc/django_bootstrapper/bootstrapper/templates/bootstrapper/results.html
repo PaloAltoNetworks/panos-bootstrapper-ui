@@ -1,0 +1,12 @@
+{% extends "bootstrapper/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="card border-primary mb-6 shadow-lg rounded">
+    <div class="card-header">Results</div>
+    <div class="card-body">
+        <h4 class="card-title">Raw Results</h4>
+        <p class="card-text">{{ results }}</p>
+    </div>
+</div>
+{%  endblock %}
