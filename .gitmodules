@@ -1,0 +1,3 @@
+[submodule "cnc/boostrapper_ui/pan_cnc"]
+	path = cnc/boostrapper_ui/pan_cnc
+	url = git@github.com:nembery/django-pan-cnc.git
