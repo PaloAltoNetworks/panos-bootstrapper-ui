@@ -1,6 +1,6 @@
 {
         "ADMINISTRATOR_USERNAME": "{{ admin_username }}",
-        "ADMINISTRATOR_PASSWORD": "{{ admin_password }}",
+        "ADMINISTRATOR_PASSWORD": "{{ admin_password | sha512_hash }}",
         "bootstrap_template": "Panorama Bootstrap.xml",
         "hostname": "{{ vm_name }}",
         "init_cfg_template": "Default Init-Cfg",
