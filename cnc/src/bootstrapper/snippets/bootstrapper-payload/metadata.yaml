@@ -1,25 +1,57 @@
-name: bootstrap-payload
+name: bootstrapper-payload
 label: Bootstrap VM-Series
 description: Builds a bootstrap archive for a VM-Series
 type: service
 extends:
 variables:
-  - name: admin_username
-    description: Admin Username
-    default: admin
-    type_hint: text
-  - name: admin_password
-    description: Admin Password
-    default:
-    type_hint: password
-  - name: vm_name
+  - name: hostname
     description: Hostname
     default: panos-01
     type_hint: text
+  - name: deployment_type
+    description: Deployment Type
+    default: tgz
+    type_hint: dropdown
+    dd_list:
+      - key: 'Tar.gz archive'
+        value: 'tgz'
+      - key: 'ISO File'
+        value: 'iso'
+      - key: 'Amazon S3 Bucket'
+        value: 's3'
+      - key: 'Azure File share'
+        value: 'azure'
+      - key: 'GCP Bucket'
+        value: 'gcp'
+      - key: 'Openstack Archive'
+        value: 'tgz'
+      - key: 'VMWare'
+        value: 'iso'
+      - key: 'KVM'
+        value: 'iso'
+      - key: 'Zip archive'
+        value: 'zip'
+  - name: include_panorama
+    description: Include Panorama
+    default: yes
+    type_hint: dropdown
+    dd_list:
+      - key: 'Yes, Manage with Panorama'
+        value: 'yes'
+      - key: 'No, do not manage with Panorama'
+        value: 'no'
   - name: panorama_ip
     description: Panorama IP Address
     default: 0.0.0.0
     type_hint: ip_address
+  - name: panorama_user
+    description: Panorama User
+    default: admin
+    type_hint: text
+  - name: panorama_password
+    description: Panorama Password
+    default: noway
+    type_hint: password
   - name: vm_auth_key
     description: Panorama VM Auth Key
     default: 123456789
@@ -32,3 +64,5 @@ variables:
 snippets:
   - name: payload
     file: payload.j2
+  - name: init_cfg
+    file: init_cfg.txt
