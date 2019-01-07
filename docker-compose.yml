@@ -1,7 +1,7 @@
 version: '3'
 services:
   bootstrapper:
-    image: "nembery/panos_bootstrapper:v0.6"
+    image: "nembery/panos_bootstrapper:v0.8.9"
     ports:
     - "5000:5000"
     volumes:
@@ -10,8 +10,12 @@ services:
     build: cnc
     ports:
       - 80:80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - $HOME/.pan_cnc:/root/.pan_cnc
+      - $HOME/.panrc:/root/.panrc
 #  aframe:
-#    image: "nembery/aframe:v1.3"
+#    image: "nembery/aframe:v1.4"
 #    ports:
 #     - "8088:8000"
 #    volumes:
@@ -20,7 +24,7 @@ services:
 #     - ./aframe/db.sqlite3:/app/aframe/db.sqlite3
 #     - $HOME/paloaltonetworks/
   content_downloader:
-    image: "nembery/panos_content_downloader:v0.1"
+    image: "nembery/panos_content_downloader:latest"
     ports:
      - "5003:5003"
     volumes:
