@@ -24,6 +24,15 @@ views:
     menu: Bootstrapper
     menu_option: Build Bootstrap Archive
 
+  - name: 'cloud_auth'
+    class: GetCloudAuthView
+
+  - name: 'include_content'
+    class: DynamicContentView
+
+  - name: 'download_content'
+    class: DownloadDynamicContentView
+
   - name: 'step02'
     class: BootstrapStep02View
 

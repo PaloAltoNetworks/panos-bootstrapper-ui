@@ -1,10 +1,16 @@
-from django import forms
-from django.shortcuts import render, HttpResponseRedirect
-from base64 import urlsafe_b64encode
-from pan_cnc.views import CNCBaseAuth, CNCBaseFormView
-from pan_cnc.lib import snippet_utils
-from pan_cnc.lib import pan_utils
+import json
 import re
+from base64 import urlsafe_b64encode
+
+import requests
+from django import forms
+from django.contrib import messages
+from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+
+from pan_cnc.lib import cnc_utils
+from pan_cnc.lib import pan_utils
+from pan_cnc.lib import snippet_utils
+from pan_cnc.views import CNCBaseAuth, CNCBaseFormView
 
 
 class BootstrapWorkflowView(CNCBaseAuth, CNCBaseFormView):
@@ -14,6 +20,74 @@ class BootstrapWorkflowView(CNCBaseAuth, CNCBaseFormView):
     fields_to_render = ['hostname', 'include_panorama', 'deployment_type']
 
     def form_valid(self, form):
+        if self.get_value_from_workflow('deployment_type', '') == 's3':
+            return HttpResponseRedirect('cloud_auth')
+
+        if self.get_value_from_workflow('include_panorama', 'no') == 'yes':
+            return HttpResponseRedirect('step03')
+        else:
+            return HttpResponseRedirect('choose_bootstrap')
+
+
+class DynamicContentView(BootstrapWorkflowView):
+    title = 'Include Dynamic Content'
+    fields_to_render = ['include_dynamic_content']
+
+    def form_valid(self, form):
+        if self.get_value_from_workflow('include_dynamic_content', 'no') == 'yes':
+            return HttpResponseRedirect('download_content')
+        else:
+            return HttpResponseRedirect('complete')
+
+
+class DownloadDynamicContentView(CNCBaseAuth, CNCBaseFormView):
+    header = 'Build Bootstrap Archive'
+    title = 'Dynamic Content Authentication'
+    snippet = 'content_downloader'
+
+    def form_valid(self, form):
+        payload = self.render_snippet_template()
+
+        # get the content_downloader host and port from the .panrc file, environrment, or default name lookup
+        # docker-compose will host content_downloader under the 'content_downloader' domain name
+        content_downloader_host = cnc_utils.get_config_value('CONTENT_DOWNLOADER_HOST', 'content_downloader')
+        content_downloader_port = cnc_utils.get_config_value('CONTENT_DOWNLOADER_PORT', '5003')
+
+        resp = requests.post(f'http://{content_downloader_host}:{content_downloader_port}/download_content',
+                             json=json.loads(payload)
+                             )
+
+        print(f'Download returned: {resp.status_code}')
+        if resp.status_code != 200:
+            messages.add_message(self.request, messages.ERROR, f'Could not download dynamic content!')
+
+        if 'Content-Disposition' in resp.headers:
+            filename = resp.headers['Content-Disposition'].split('=')[1]
+            messages.add_message(self.request, messages.INFO, f'Downloaded Dynamic Content file: {filename}')
+
+        return HttpResponseRedirect('complete')
+
+
+class GetCloudAuthView(BootstrapWorkflowView):
+    title = 'Enter Cloud Auth Information'
+    fields_to_render = []
+
+    def generate_dynamic_form(self):
+        deployment_type = self.get_value_from_workflow('deployment_type', '')
+        if deployment_type == 's3':
+            self.fields_to_render += ['aws_key', 'aws_secret', 'aws_location']
+
+        return super().generate_dynamic_form()
+
+    def form_valid(self, form):
+
+        aws_location = self.get_value_from_workflow('aws_location', 'us-east-2')
+
+        if aws_location == 'us-east-1':
+            # fix for stupid aws api
+            aws_location = ''
+            self.save_value_to_workflow('aws_location', aws_location)
+
         if self.get_value_from_workflow('include_panorama', 'no') == 'yes':
             return HttpResponseRedirect('step03')
         else:
@@ -22,14 +96,22 @@ class BootstrapWorkflowView(CNCBaseAuth, CNCBaseFormView):
 
 class BootstrapStep03View(BootstrapWorkflowView):
     title = 'Configure Panorama Server'
-    fields_to_render = ['panorama_ip', 'panorama_user', 'panorama_password']
+    fields_to_render = ['TARGET_IP', 'TARGET_USERNAME', 'TARGET_PASSWORD']
 
     def form_valid(self, form):
-        panorama_ip = self.get_value_from_workflow('panorama_ip', '')
-        panorama_user = self.get_value_from_workflow('panorama_user', '')
-        panorama_password = self.get_value_from_workflow('panorama_password', '')
-        p = pan_utils.panorama_login(panorama_ip, panorama_user, panorama_password)
-        r = pan_utils.get_vm_auth_key_from_panorama()
+        target_ip = self.get_value_from_workflow('TARGET_IP', '')
+        target_username = self.get_value_from_workflow('TARGET_USERNAME', '')
+        target_password = self.get_value_from_workflow('TARGET_PASSWORD', '')
+        p = pan_utils.panorama_login(target_ip, target_username, target_password)
+        try:
+            r = pan_utils.get_vm_auth_key_from_panorama()
+        except BaseException:
+            print('Could not get vm auth key from panorama')
+            messages.add_message(self.request, messages.ERROR, 'Could not contact Panorama!')
+            results = dict()
+            results['results'] = 'Error, Could not contact Panorama'
+            return render(self.request, 'pan_cnc/results.html', context=results)
+
         matches = re.match('VM auth key (.*?) ', r)
         if matches:
             vm_auth_key = matches[1]
@@ -38,7 +120,7 @@ class BootstrapStep03View(BootstrapWorkflowView):
         else:
             print('Could not get VM Auth key from Panorama!')
 
-        return HttpResponseRedirect('complete')
+        return HttpResponseRedirect('include_content')
 
 
 class BootstrapStep04View(BootstrapWorkflowView):
@@ -127,7 +209,7 @@ class ConfigureBootstrapView(CNCBaseAuth, CNCBaseFormView):
             encoded_bootstrap_string = urlsafe_b64encode(bsb)
             self.save_value_to_workflow('bootstrap_string', encoded_bootstrap_string.decode('utf-8'))
 
-        return HttpResponseRedirect('complete')
+        return HttpResponseRedirect('include_content')
 
 
 class UploadBootstrapView(BootstrapWorkflowView):
@@ -147,7 +229,7 @@ class UploadBootstrapView(BootstrapWorkflowView):
             bsb = bytes(bs, 'utf-8')
             encoded_bootstrap_string = urlsafe_b64encode(bsb)
             self.save_value_to_workflow('bootstrap_string', encoded_bootstrap_string.decode('utf-8'))
-        return HttpResponseRedirect('complete')
+        return HttpResponseRedirect('include_content')
 
 
 class CompleteWorkflowView(BootstrapWorkflowView):
@@ -156,6 +238,11 @@ class CompleteWorkflowView(BootstrapWorkflowView):
 
     def form_valid(self, form):
         context = self.get_snippet_context()
+
+        if 'panorama_ip' not in context and 'TARGET_IP' in context:
+            print('Setting panorama ip on context')
+            context['panorama_ip'] = context['TARGET_IP']
+
         print('Compiling init-cfg.txt')
         ic = snippet_utils.render_snippet_template(self.service, self.app_dir, context, 'init_cfg.txt')
         print(ic)
@@ -163,12 +250,48 @@ class CompleteWorkflowView(BootstrapWorkflowView):
             icb = bytes(ic, 'utf-8')
             encoded_init_cfg_string = urlsafe_b64encode(icb)
             self.save_value_to_workflow('init_cfg_string', encoded_init_cfg_string.decode('utf-8'))
-            
-        results = dict()
-        if self.app_dir in self.request.session:
-            session_cache = self.request.session[self.app_dir]
-            for v in session_cache:
-                print(f'{v}: {session_cache[v]}')
 
-        results['results'] = self.render_snippet_template()
-        return render(self.request, 'pan_cnc/results.html', context=results)
+        payload = self.render_snippet_template()
+
+        # get the bootstrapper host and port from the .panrc file, environrment, or default name lookup
+        # docker-compose will host bootstrapper under the 'bootstrapper' domain name
+        bootstrapper_host = cnc_utils.get_config_value('BOOTSTRAPPER_HOST', 'bootstrapper')
+        bootstrapper_port = cnc_utils.get_config_value('BOOTSTRAPPER_PORT', '5000')
+
+        resp = requests.post(f'http://{bootstrapper_host}:{bootstrapper_port}/generate_bootstrap_package',
+                             json=json.loads(payload)
+                             )
+        if 'Content-Type' in resp.headers:
+            content_type = resp.headers['Content-Type']
+        if 'Content-Disposition' in resp.headers:
+            filename = resp.headers['Content-Disposition'].split('=')[1]
+        else:
+            filename = context.get('hostname')
+
+        print(resp.headers)
+        if resp.status_code == 200:
+            if 'json' in content_type:
+                return_json = resp.json()
+                if 'response' in return_json:
+                    result_text = return_json["response"]
+                else:
+                    result_text = resp.text
+
+                results = dict()
+                results['results'] = str(resp.status_code)
+                results['results'] += '\n'
+                results['results'] += result_text
+                return render(self.request, 'pan_cnc/results.html', context=results)
+
+            else:
+                response = HttpResponse(content_type=content_type)
+                response['Content-Disposition'] = 'attachment; filename=%s' % filename
+                response.write(resp.content)
+                return response
+        else:
+            results = dict()
+            results['results'] = str(resp.status_code)
+            results['results'] += '\n'
+            results['results'] += resp.text
+
+            return render(self.request, 'pan_cnc/results.html', context=results)

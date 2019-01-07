@@ -1,4 +1,4 @@
-type={{ dhcp_or_static }}
+type=dhcp-client
 ip-address={{ ip_address }}
 default-gateway={{ default_gateway }}
 netmask={{ netmask }}

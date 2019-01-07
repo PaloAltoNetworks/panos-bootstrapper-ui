@@ -31,6 +31,15 @@ variables:
         value: 'iso'
       - key: 'Zip archive'
         value: 'zip'
+  - name: include_dynamic_content
+    description: Include Dynamic Content
+    default: no
+    type_hint: dropdown
+    dd_list:
+      - key: 'No, do not include Dynamic Content'
+        value: 'no'
+      - key: 'Yes, Download and include Dynamic Content'
+        value: 'yes'
   - name: include_panorama
     description: Include Panorama
     default: yes
@@ -40,15 +49,15 @@ variables:
         value: 'yes'
       - key: 'No, do not manage with Panorama'
         value: 'no'
-  - name: panorama_ip
+  - name: TARGET_IP
     description: Panorama IP Address
     default: 0.0.0.0
     type_hint: ip_address
-  - name: panorama_user
+  - name: TARGET_USERNAME
     description: Panorama User
     default: admin
     type_hint: text
-  - name: panorama_password
+  - name: TARGET_PASSWORD
     description: Panorama Password
     default: noway
     type_hint: password
@@ -56,9 +65,21 @@ variables:
     description: Panorama VM Auth Key
     default: 123456789
     type_hint: text
+  - name: aws_key
+    description: Amazon S3 API Key
+    default: ""
+    type_hint: text
+  - name: aws_secret
+    description: Amazon S3 API Secret
+    default: ""
+    type_hint: password
+  - name: aws_location
+    description: Amazon Region
+    default: "us-east-2"
+    type_hint: text
   - name: auth_key
     description: Auth Code
-    default: text
+    default: Valid License Auth Code
     type_hint: text
 
 snippets:

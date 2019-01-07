@@ -1,6 +1,12 @@
 {
-        "bootstrap_xml": "{{ bootstrap_string }}",
+        "bootstrap_str": "{{ bootstrap_string }}",
         "hostname": "{{ hostname }}",
         "init_cfg_str": "{{ init_cfg_string }}",
-        "archive_type": "{{ deployment_type }}"
+        "archive_type": "{{ deployment_type }}",
+        {% if deployment_type == 's3' %}
+        "aws_key": "{{ aws_key }}",
+        "aws_secret": "{{ aws_secret }}",
+        "aws_location": "{{ aws_location }}",
+        {% endif %}
+        "auth_key": "{{ auth_key }}"
 }
