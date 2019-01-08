@@ -18,16 +18,24 @@ For details about the bootstrapping process, refer to the official
 git clone git@github.com:PaloAltoNetworks/panos-bootstrapper-ui.git
 
 ```
-
-3. Execute the docker-compose up command
+3. Init the required submodules
 
 ```bash
 cd panos_bootstrapper_ui
-docker-compose up
+git submodule init
+git submodule update
+```
+4. Build the docker containers
+
+```bash
+docker-compose build
 ```
 
-4. Browse to http://localhost:8088
+4. Launch the docker containers
 
-### Examples 
+```bash
+docker-compose up
+```
+6. Browse to http://localhost
 
-Examples can be found in the project wiki on GitHub. 
+
