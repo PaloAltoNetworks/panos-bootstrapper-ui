@@ -53,3 +53,13 @@ views:
 
   - name: complete
     class: CompleteWorkflowView
+
+  - name: content_downloader
+    class: CNCBaseFormView
+    menu: Dynamic Content
+    menu_option: Download Latest Content
+    attributes:
+      snippet: content_downloader
+      header: Dynamic Content
+      title: Download Latest Content
+      next_url: ''

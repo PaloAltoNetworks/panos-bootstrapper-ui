@@ -13,7 +13,7 @@ from pan_cnc.lib import snippet_utils
 from pan_cnc.views import CNCBaseAuth, CNCBaseFormView
 
 
-class BootstrapWorkflowView(CNCBaseAuth, CNCBaseFormView):
+class BootstrapWorkflowView(CNCBaseFormView):
     snippet = 'bootstrapper-payload'
     header = 'Build Bootstrap Archive'
     title = 'Deployment Information'
@@ -40,7 +40,7 @@ class DynamicContentView(BootstrapWorkflowView):
             return HttpResponseRedirect('complete')
 
 
-class DownloadDynamicContentView(CNCBaseAuth, CNCBaseFormView):
+class DownloadDynamicContentView(CNCBaseFormView):
     header = 'Build Bootstrap Archive'
     title = 'Dynamic Content Authentication'
     snippet = 'content_downloader'
@@ -185,7 +185,7 @@ class ChooseBootstrapXmlView(BootstrapWorkflowView):
             return HttpResponseRedirect('configure_bootstrap')
 
 
-class ConfigureBootstrapView(CNCBaseAuth, CNCBaseFormView):
+class ConfigureBootstrapView(CNCBaseFormView):
     title = 'Configure Custom Bootstrap'
     header = 'Build bootstrap Archive'
     fields_to_filter = ['hostname', 'FW_NAME']
@@ -257,7 +257,8 @@ class CompleteWorkflowView(BootstrapWorkflowView):
         # docker-compose will host bootstrapper under the 'bootstrapper' domain name
         bootstrapper_host = cnc_utils.get_config_value('BOOTSTRAPPER_HOST', 'bootstrapper')
         bootstrapper_port = cnc_utils.get_config_value('BOOTSTRAPPER_PORT', '5000')
-
+        print(f'Using bootstrapper_host: {bootstrapper_host}')
+        print(f'Using bootstrapper_port: {bootstrapper_port}')
         resp = requests.post(f'http://{bootstrapper_host}:{bootstrapper_port}/generate_bootstrap_package',
                              json=json.loads(payload)
                              )
