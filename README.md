@@ -21,7 +21,7 @@ git clone git@github.com:PaloAltoNetworks/panos-bootstrapper-ui.git
 3. Init the required submodules
 
 ```bash
-cd panos_bootstrapper_ui
+cd panos-bootstrapper-ui
 git submodule init
 git submodule update
 ```

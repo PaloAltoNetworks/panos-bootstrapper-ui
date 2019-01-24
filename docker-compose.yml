@@ -1,7 +1,7 @@
 version: '3'
 services:
   bootstrapper:
-    image: "nembery/panos_bootstrapper:v0.8.9"
+    image: "nembery/panos_bootstrapper:v0.9"
     ports:
     - "5000:5000"
     volumes:
@@ -11,7 +11,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+#      - /var/run/docker.sock:/var/run/docker.sock
       - $HOME/.pan_cnc:/root/.pan_cnc
       - $HOME/.panrc:/root/.panrc
 #  aframe:
@@ -29,10 +29,10 @@ services:
      - "5003:5003"
     volumes:
       - ./content_updates:/var/tmp/content_updates/
-  docker_api:
-    image: "alpine/socat"
-    ports:
-      - "127.0.0.1:2376:2375"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: ['tcp-listen:2375,fork,reuseaddr', 'unix-connect:/var/run/docker.sock']
+#  docker_api:
+#    image: "alpine/socat"
+#    ports:
+#      - "127.0.0.1:2376:2375"
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    command: ['tcp-listen:2375,fork,reuseaddr', 'unix-connect:/var/run/docker.sock']
