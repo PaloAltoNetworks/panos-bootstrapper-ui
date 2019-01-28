@@ -1,0 +1,42 @@
+name: content_downloader
+label: Content Downloader Tool
+description: Downloads the latest Dynamic Content from the PaloAltoNetworks support site
+type: template
+extends:
+variables:
+  - name: username
+    description: PaloAltoNetworks Username
+    default: someone@paloaltonetworks.com
+    type_hint: text
+  - name: password
+    description: PaloAltoNetworks Password
+    default:
+    type_hint: password
+  - name: package
+    description: Dynamic Content Type
+    type_hint: dropdown
+    default: appthreat
+    dd_list:
+      - key: 'App Threat'
+        value: 'appthreat'
+      - key: 'Application'
+        value: 'app'
+      - key: 'Antivirus'
+        value: 'antivirus'
+      - key: 'Wildfire'
+        value: 'wildfire2'
+      - key: 'Traps'
+        value: 'traps'
+  - name: force_update
+    description: Force Latest Update
+    default: True
+    type_hint: dropdown
+    dd_list:
+      - key: 'Ensure latest content'
+        value: 'True'
+      - key: 'Prefer Speed - use cached'
+        value: 'False'
+
+snippets:
+  - name: payload
+    file: payload.j2

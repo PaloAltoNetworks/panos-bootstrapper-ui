@@ -1,0 +1,89 @@
+name: bootstrapper-payload
+label: Bootstrap VM-Series
+description: Builds a bootstrap archive for a VM-Series
+type: service
+extends:
+variables:
+  - name: hostname
+    description: Hostname
+    default: panos-01
+    type_hint: text
+  - name: deployment_type
+    description: Deployment Type
+    default: tgz
+    type_hint: dropdown
+    dd_list:
+      - key: 'Tar.gz archive'
+        value: 'tgz'
+      - key: 'ISO File'
+        value: 'iso'
+      - key: 'Amazon S3 Bucket'
+        value: 's3'
+      - key: 'Azure File share'
+        value: 'azure'
+      - key: 'GCP Bucket'
+        value: 'gcp'
+      - key: 'Openstack Archive'
+        value: 'tgz'
+      - key: 'VMWare'
+        value: 'iso'
+      - key: 'KVM'
+        value: 'iso'
+      - key: 'Zip archive'
+        value: 'zip'
+  - name: include_dynamic_content
+    description: Include Dynamic Content
+    default: no
+    type_hint: dropdown
+    dd_list:
+      - key: 'No, do not include Dynamic Content'
+        value: 'no'
+      - key: 'Yes, Download and include Dynamic Content'
+        value: 'yes'
+  - name: include_panorama
+    description: Include Panorama
+    default: yes
+    type_hint: dropdown
+    dd_list:
+      - key: 'Yes, Manage with Panorama'
+        value: 'yes'
+      - key: 'No, do not manage with Panorama'
+        value: 'no'
+  - name: TARGET_IP
+    description: Panorama IP Address
+    default: 0.0.0.0
+    type_hint: ip_address
+  - name: TARGET_USERNAME
+    description: Panorama User
+    default: admin
+    type_hint: text
+  - name: TARGET_PASSWORD
+    description: Panorama Password
+    default: noway
+    type_hint: password
+  - name: vm_auth_key
+    description: Panorama VM Auth Key
+    default: 123456789
+    type_hint: text
+  - name: aws_key
+    description: Amazon S3 API Key
+    default: ""
+    type_hint: text
+  - name: aws_secret
+    description: Amazon S3 API Secret
+    default: ""
+    type_hint: password
+  - name: aws_location
+    description: Amazon Region
+    default: "us-east-2"
+    type_hint: text
+  - name: auth_key
+    description: Auth Code
+    default: Valid License Auth Code
+    type_hint: text
+
+snippets:
+  - name: payload
+    file: payload.j2
+  - name: init_cfg
+    file: init_cfg.txt
