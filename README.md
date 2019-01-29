@@ -10,32 +10,34 @@ For details about the bootstrapping process, refer to the official
 
 ### Installation
 
-1. Install docker
+1: Install docker
 
-2. clone or download this repository
+2: clone or download this repository
 
 ```bash
 git clone git@github.com:PaloAltoNetworks/panos-bootstrapper-ui.git
 
 ```
-3. Init the required submodules
+3: Init the required submodules
 
 ```bash
 cd panos-bootstrapper-ui
 git submodule init
 git submodule update
 ```
-4. Build the docker containers
+4: Build the docker containers
 
 ```bash
 docker-compose build
 ```
 
-4. Launch the docker containers
+5: Launch the docker containers
 
 ```bash
 docker-compose up
 ```
-6. Browse to http://localhost
+6: Browse to http://localhost
+
+7: Default Login is 'paloalto' and 'bootstrapper'
 
 
