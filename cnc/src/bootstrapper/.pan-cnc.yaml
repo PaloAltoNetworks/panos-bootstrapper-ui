@@ -13,10 +13,10 @@ views:
     menu: Bootstrapper
     menu_option: Welcome
     attributes:
-      template_name: pan_cnc/welcome.html
+      template_name: bootstrapper/welcome.html
     context:
       title: Bootstrapper
-      description: Pan-OS Bootstrapper Tool
+      description: inline
       documentation_link: http://bootstrapper.readthedocs.io
       next: build
 

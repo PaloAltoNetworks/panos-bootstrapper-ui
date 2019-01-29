@@ -11,6 +11,7 @@ from pan_cnc.lib import cnc_utils
 from pan_cnc.lib import pan_utils
 from pan_cnc.lib import snippet_utils
 from pan_cnc.views import CNCBaseFormView
+from pan_cnc.lib.exceptions import TargetConnectionException
 
 
 class BootstrapWorkflowView(CNCBaseFormView):
@@ -108,10 +109,14 @@ class BootstrapStep03View(BootstrapWorkflowView):
         target_ip = self.get_value_from_workflow('TARGET_IP', '')
         target_username = self.get_value_from_workflow('TARGET_USERNAME', '')
         target_password = self.get_value_from_workflow('TARGET_PASSWORD', '')
-        p = pan_utils.panorama_login(target_ip, target_username, target_password)
+        p = pan_utils.panos_login(target_ip, target_username, target_password)
+        if p is None:
+            results = dict()
+            results['results'] = 'Error, Could not contact Panorama'
+            return render(self.request, 'pan_cnc/results.html', context=results)
         try:
             r = pan_utils.get_vm_auth_key_from_panorama()
-        except BaseException:
+        except TargetConnectionException:
             print('Could not get vm auth key from panorama')
             messages.add_message(self.request, messages.ERROR, 'Could not contact Panorama!')
             results = dict()
