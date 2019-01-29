@@ -2,6 +2,8 @@
 .DS_Store
 venv
 *pyc
-!snippets/app
-snippets/
+**/snippets/**/
+!**/snippets/app
+!**/snippets/app/**
+!**/snippets/app/**/*
 __pycache__/*
