@@ -1,4 +1,5 @@
-name: branch
+name: bootstrapper
+label: Pan-OS Bootstrapper
 
 repositories:
   - name: Iron-Skillet

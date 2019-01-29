@@ -77,6 +77,22 @@ variables:
     description: Amazon Region
     default: "us-east-2"
     type_hint: text
+  - name: azure_storage_account
+    description: Azure Storage Account Name
+    default: ""
+    type_hint: text
+  - name: azure_access_key
+    description: Azure Access Key
+    default: ""
+    type_hint: password
+  - name: gcp_project_id
+    description: GCP Project ID
+    default: ""
+    type_hint: text
+  - name: gcp_access_token
+    description: GCP Access Token
+    default: ""
+    type_hint: password
   - name: auth_key
     description: Auth Code
     default: Valid License Auth Code

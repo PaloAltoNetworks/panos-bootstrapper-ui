@@ -10,7 +10,7 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from pan_cnc.lib import cnc_utils
 from pan_cnc.lib import pan_utils
 from pan_cnc.lib import snippet_utils
-from pan_cnc.views import CNCBaseAuth, CNCBaseFormView
+from pan_cnc.views import CNCBaseFormView
 
 
 class BootstrapWorkflowView(CNCBaseFormView):
@@ -20,7 +20,8 @@ class BootstrapWorkflowView(CNCBaseFormView):
     fields_to_render = ['hostname', 'include_panorama', 'deployment_type']
 
     def form_valid(self, form):
-        if self.get_value_from_workflow('deployment_type', '') == 's3':
+        deployment_type = self.get_value_from_workflow('deployment_type', '')
+        if deployment_type in ['s3', 'azure', 'gcp']:
             return HttpResponseRedirect('cloud_auth')
 
         if self.get_value_from_workflow('include_panorama', 'no') == 'yes':
@@ -76,17 +77,22 @@ class GetCloudAuthView(BootstrapWorkflowView):
         deployment_type = self.get_value_from_workflow('deployment_type', '')
         if deployment_type == 's3':
             self.fields_to_render += ['aws_key', 'aws_secret', 'aws_location']
-
+        elif deployment_type == 'azure':
+            self.fields_to_render += ['azure_storage_account', 'azure_access_key']
+        elif deployment_type == 'gcp':
+            self.fields_to_render += ['gcp_project_id', 'gcp_access_token']
         return super().generate_dynamic_form()
 
     def form_valid(self, form):
 
-        aws_location = self.get_value_from_workflow('aws_location', 'us-east-2')
+        deployment_type = self.get_value_from_workflow('deployment_type', '')
+        if deployment_type == 's3':
+            aws_location = self.get_value_from_workflow('aws_location', 'us-east-2')
 
-        if aws_location == 'us-east-1':
-            # fix for stupid aws api
-            aws_location = ''
-            self.save_value_to_workflow('aws_location', aws_location)
+            if aws_location == 'us-east-1':
+                # fix for stupid aws api
+                aws_location = ''
+                self.save_value_to_workflow('aws_location', aws_location)
 
         if self.get_value_from_workflow('include_panorama', 'no') == 'yes':
             return HttpResponseRedirect('step03')
@@ -290,7 +296,7 @@ class CompleteWorkflowView(BootstrapWorkflowView):
                 response.write(resp.content)
                 return response
         else:
-            results = dict()
+            results = super().get_context_data()
             results['results'] = str(resp.status_code)
             results['results'] += '\n'
             results['results'] += resp.text
