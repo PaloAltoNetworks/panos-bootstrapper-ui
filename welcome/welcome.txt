@@ -6,6 +6,10 @@
 #
 #            http://127.0.0.1
 #
+#        Default credentials are:
+#           username: paloalto
+#           password: bootstrapper
+#
 #        To View API documentation, browse to:
 #
 #            http://127.0.0.1:5001
