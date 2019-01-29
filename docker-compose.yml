@@ -1,18 +1,18 @@
 version: '3'
 services:
   bootstrapper:
-    image: "nembery/panos_bootstrapper:latest"
+    image: "nembery/panos_bootstrapper:v0.9"
     ports:
     - "127.0.0.1:5001:5000"
     volumes:
      - ./content_updates:/var/tmp/content_updates/
-  aframe:
-    image: "nembery/aframe:latest"
+  cnc:
+    build: cnc
     ports:
-     - "8088:8000"
+      - 80:80
     volumes:
-     - ./aframe/imports:/app/aframe/conf/imports
-     - ./aframe/aframe.conf:/app/aframe/conf/aframe.conf
+      - $HOME/.pan_cnc:/root/.pan_cnc
+      - $HOME/.panrc:/root/.panrc
   content_downloader:
     image: "nembery/panos_content_downloader:latest"
     ports:
@@ -22,7 +22,7 @@ services:
   welcome:
     image: alpine
     depends_on:
-      - aframe
-    command: sh -c 'chmod +x /tmp/w/wait-for.sh && /tmp/w/wait-for.sh aframe:8000 -- sleep 10 && cat /tmp/w/welcome.txt'
+      - cnc
+    command: sh -c 'chmod +x /tmp/w/wait-for.sh && /tmp/w/wait-for.sh cnc:80 -- sleep 5 && cat /tmp/w/welcome.txt'
     volumes:
       - ./welcome:/tmp/w

@@ -1,0 +1,18 @@
+{
+        "bootstrap_str": "{{ bootstrap_string }}",
+        "hostname": "{{ hostname }}",
+        "init_cfg_str": "{{ init_cfg_string }}",
+        "archive_type": "{{ deployment_type }}",
+        {% if deployment_type == 's3' %}
+        "aws_key": "{{ aws_key }}",
+        "aws_secret": "{{ aws_secret }}",
+        "aws_location": "{{ aws_location }}",
+        {% elif deployment_type == 'azure' %}
+        "azure_account_name": "{{ azure_storage_account }}",
+        "azure_account_key": "{{ azure_access_key }}",
+        {% elif deployment_type == 'gcp' %}
+        "project_id": "{{ gcp_project_id }}",
+        "access_token": "{{ gcp_access_token }}",
+        {% endif %}
+        "auth_key": "{{ auth_key }}"
+}

@@ -1,0 +1,22 @@
+name: bootstrap_xml
+label: Bootstrap.xml
+description: Initial bootstrap configuration for Pan-OS devices
+type: template
+extends:
+variables:
+  - name: ADMINISTRATOR_USERNAME
+    description: Admin Username
+    default: admin
+    type_hint: text
+  - name: ADMINISTRATOR_PASSWORD
+    description: Admin Password
+    default:
+    type_hint: password
+  - name: hostname
+    description: Hostname
+    default: panos-01
+    type_hint: text
+
+snippets:
+  - name: bootstrap.xml
+    file: bootstrap.xml
