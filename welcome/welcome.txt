@@ -4,7 +4,7 @@
 #
 #        To begin, open a web browser and browse to:
 #
-#            http://127.0.0.1:8088
+#            http://127.0.0.1
 #
 #        To View API documentation, browse to:
 #
