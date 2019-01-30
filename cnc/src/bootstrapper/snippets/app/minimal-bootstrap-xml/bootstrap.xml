@@ -1,15 +1,15 @@
 <config version="8.0.0" urldb="paloaltonetworks">
   <mgt-config>
     <users>
-      <entry name="admin">
-        <phash>fnRL/G5lXVMug</phash>
-        <permissions>
-          <role-based>
-            <superuser>yes</superuser>
-          </role-based>
-        </permissions>
-      </entry>
-    </users>
+            <entry name="{{ ADMINISTRATOR_USERNAME }}">
+                <phash>{{ ADMINISTRATOR_PASSWORD | md5_hash }}</phash>
+                <permissions>
+                    <role-based>
+                        <superuser>yes</superuser>
+                    </role-based>
+                </permissions>
+            </entry>
+        </users>
   </mgt-config>
   <shared>
     <application/>
@@ -264,15 +264,15 @@
       </network>
       <deviceconfig>
         <system>
-          <ip-address>10.0.1.203</ip-address>
-          <netmask>255.255.255.0</netmask>
+          <ip-address>{{ ipv4_mgmt_address }}</ip-address>
+          <netmask>{{ ipv4_mgmt_netmask }}</netmask>
           <update-server>updates.paloaltonetworks.com</update-server>
           <update-schedule>
             <threats>
               <recurring>
                 <weekly>
                   <day-of-week>wednesday</day-of-week>
-                  <at>01:02</at>
+                  <at>{{ range(1,4) |random }}:{{ range(1,60) |random }}</at>
                   <action>download-only</action>
                 </weekly>
               </recurring>
@@ -283,11 +283,11 @@
             <disable-telnet>yes</disable-telnet>
             <disable-http>yes</disable-http>
           </service>
-          <hostname>PA-220</hostname>
+          <hostname>{{ hostname }}</hostname>
           <type>
             <static/>
           </type>
-          <default-gateway>10.0.1.1</default-gateway>
+          <default-gateway>{{ ipv4_default_gateway }}</default-gateway>
         </system>
         <setting>
           <config>

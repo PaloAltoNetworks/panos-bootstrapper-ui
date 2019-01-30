@@ -39,7 +39,7 @@ class DynamicContentView(BootstrapWorkflowView):
         if self.get_value_from_workflow('include_dynamic_content', 'no') == 'yes':
             return HttpResponseRedirect('download_content')
         else:
-            return HttpResponseRedirect('complete')
+            return HttpResponseRedirect('configure_management')
 
 
 class DownloadDynamicContentView(CNCBaseFormView):
@@ -67,7 +67,7 @@ class DownloadDynamicContentView(CNCBaseFormView):
             filename = resp.headers['Content-Disposition'].split('=')[1]
             messages.add_message(self.request, messages.INFO, f'Downloaded Dynamic Content file: {filename}')
 
-        return HttpResponseRedirect('complete')
+        return HttpResponseRedirect('configure_management')
 
 
 class GetCloudAuthView(BootstrapWorkflowView):
@@ -142,7 +142,26 @@ class BootstrapStep04View(BootstrapWorkflowView):
         if self.get_value_from_workflow('include_panorama', 'no') == 'no':
             return HttpResponseRedirect('choose_bootstrap')
         else:
+            return HttpResponseRedirect('configure_management')
+
+
+class ConfigureManagementView(BootstrapWorkflowView):
+    title = 'Configure Management Connectivity'
+    fields_to_render = ['network_type']
+
+    def form_valid(self, form):
+        if self.get_value_from_workflow('network_type', 'dhcp-client') == 'dhcp-client':
             return HttpResponseRedirect('complete')
+        else:
+            return HttpResponseRedirect('configure_management_ip')
+
+
+class ConfigureManagementStaticView(BootstrapWorkflowView):
+    title = 'Configure Management Static IP Address'
+    fields_to_render = ['ipv4_mgmt_address', 'ipv4_mgmt_netmask', 'ipv4_default_gateway']
+
+    def form_valid(self, form):
+        return HttpResponseRedirect('complete')
 
 
 class ChooseBootstrapXmlView(BootstrapWorkflowView):
@@ -168,8 +187,9 @@ class ChooseBootstrapXmlView(BootstrapWorkflowView):
 
         # let's sort the list by the label attribute (index 1 in the tuple)
         choices_list = sorted(choices_list, key=lambda k: k[1])
-        choices_list.insert(0, ('bootstrap_xml', 'Use Default Bootstrap'))
-        choices_list.insert(1, ('upload', 'Upload Custom Bootstrap'))
+        choices_list.insert(0, ('none', 'Do not include a bootstrap'))
+        choices_list.insert(1, ('bootstrap_xml', 'Use Default Bootstrap'))
+        choices_list.insert(2, ('upload', 'Upload Custom Bootstrap'))
 
         dynamic_form.fields['custom_bootstrap'] = forms.ChoiceField(label='Custom Bootstrap',
                                                                     choices=tuple(choices_list))
@@ -190,7 +210,9 @@ class ChooseBootstrapXmlView(BootstrapWorkflowView):
 
         if cb == 'upload':
             return HttpResponseRedirect('upload_bootstrap')
-
+        elif cb == 'none':
+            self.save_value_to_workflow('bootstrap_string', '')
+            return HttpResponseRedirect('include_content')
         else:
             # custom bootstrap is set to some other value from a snippet
             return HttpResponseRedirect('configure_bootstrap')

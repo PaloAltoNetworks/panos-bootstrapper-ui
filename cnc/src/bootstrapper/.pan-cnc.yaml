@@ -25,6 +25,12 @@ views:
     menu: Bootstrapper
     menu_option: Build Bootstrap Archive
 
+  - name: 'configure_management'
+    class: ConfigureManagementView
+
+  - name: 'configure_management_ip'
+    class: ConfigureManagementStaticView
+
   - name: 'cloud_auth'
     class: GetCloudAuthView
 
