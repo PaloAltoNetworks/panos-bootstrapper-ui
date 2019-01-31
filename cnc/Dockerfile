@@ -1,5 +1,5 @@
 
-FROM python:alpine
+FROM python:3.6-alpine
 
 LABEL description="Bootstrapper-UI"
 LABEL version="0.2"

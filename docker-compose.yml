@@ -10,6 +10,8 @@ services:
     build: cnc
     ports:
       - 80:80
+    environment:
+      - PYTHONUNBUFFERED:1
     volumes:
       - $HOME/.pan_cnc:/root/.pan_cnc
       - $HOME/.panrc:/root/.panrc
