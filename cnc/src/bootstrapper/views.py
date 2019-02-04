@@ -1,17 +1,26 @@
-import json
 import re
 from base64 import urlsafe_b64encode
 
+import json
+import os
+import re
+import shutil
+from base64 import urlsafe_b64encode
+from pathlib import Path
+
 import requests
 from django import forms
+from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+from django.views.generic import RedirectView
 
 from pan_cnc.lib import cnc_utils
+from pan_cnc.lib import git_utils
 from pan_cnc.lib import pan_utils
 from pan_cnc.lib import snippet_utils
-from pan_cnc.views import CNCBaseFormView
 from pan_cnc.lib.exceptions import TargetConnectionException
+from pan_cnc.views import CNCBaseFormView, CNCView, CNCBaseAuth
 
 
 class BootstrapWorkflowView(CNCBaseFormView):
@@ -329,3 +338,127 @@ class CompleteWorkflowView(BootstrapWorkflowView):
             results['results'] += resp.text
 
             return render(self.request, 'pan_cnc/results.html', context=results)
+
+
+class ImportGitRepoView(CNCBaseFormView):
+    # define initial dynamic form from this snippet metadata
+    snippet = 'import_repo'
+    app_dir = 'bootstrapper'
+    next_url = '/bootstrapper/repos'
+
+    def get_snippet(self):
+        # always return the hard configured snippet
+        return self.snippet
+
+    # once the form has been submitted and we have all the values placed in the workflow, execute this
+    def form_valid(self, form):
+        workflow = self.get_workflow()
+
+        # get the values from the user submitted form here
+        url = workflow.get('url')
+        branch = workflow.get('branch')
+        repo_name = workflow.get('repo_name')
+        # FIXME - Ensure repo_name is unique
+
+        # we are going to keep the snippets in the snippets dir in the panhandler app
+        # get the dir where all apps are installed
+        src_dir = settings.SRC_PATH
+        # get the panhandler app dir
+        panhandler_dir = os.path.join(src_dir, self.app_dir)
+        # get the snippets dir under that
+        snippets_dir = os.path.join(panhandler_dir, 'snippets')
+        # figure out what our new repo / snippet dir will be
+        new_repo_snippets_dir = os.path.join(snippets_dir, repo_name)
+
+        # where to clone from
+        clone_url = url
+        if 'github' in url.lower():
+            details = git_utils.get_repo_upstream_details(repo_name, url)
+            if 'clone_url' in details:
+                clone_url = details['clone_url']
+
+        if not git_utils.clone_repo(new_repo_snippets_dir, repo_name, clone_url, branch):
+            messages.add_message(self.request, messages.ERROR, 'Could not Import Repository')
+        else:
+            print('Invalidating snippet cache')
+            snippet_utils.invalidate_snippet_caches()
+
+            messages.add_message(self.request, messages.INFO, 'Imported Repository Successfully')
+
+        # return render(self.request, 'pan_cnc/results.html', context)
+        return HttpResponseRedirect(self.next_url)
+
+
+class UpdateGitRepoView(CNCBaseAuth, RedirectView):
+    next_url = '/bootstrapper/repos'
+    app_dir = 'bootstrapper'
+
+    def get_redirect_url(self, *args, **kwargs):
+        repo_name = kwargs['repo_name']
+        # we are going to keep the snippets in the snippets dir in the panhandler app
+        # get the dir where all apps are installed
+        src_dir = settings.SRC_PATH
+        # get the panhandler app dir
+        panhandler_dir = os.path.join(src_dir, self.app_dir)
+        # get the snippets dir under that
+        snippets_dir = os.path.join(panhandler_dir, 'snippets')
+        repo_dir = os.path.join(snippets_dir, repo_name)
+
+        msg = git_utils.update_repo(repo_dir)
+        if 'Error' in msg:
+            level = messages.ERROR
+        else:
+            print('Invalidating snippet cache')
+            snippet_utils.invalidate_snippet_caches()
+            level = messages.INFO
+
+        messages.add_message(self.request, level, msg)
+        return self.next_url
+
+
+class RemoveGitRepoView(CNCBaseAuth, RedirectView):
+    next_url = '/bootstrapper/repos'
+    app_dir = 'bootstrapper'
+
+    def get_redirect_url(self, *args, **kwargs):
+        repo_name = kwargs['repo_name']
+        # we are going to keep the snippets in the snippets dir in the panhandler app
+        # get the dir where all apps are installed
+        src_dir = settings.SRC_PATH
+        # get the panhandler app dir
+        panhandler_dir = os.path.join(src_dir, self.app_dir)
+        # get the snippets dir under that
+        snippets_dir = os.path.join(panhandler_dir, 'snippets')
+        repo_dir = os.path.abspath(os.path.join(snippets_dir, repo_name))
+
+        if snippets_dir in repo_dir:
+            print(f'Removing repo {repo_name}')
+            print('Invalidating snippet cache')
+            snippet_utils.invalidate_snippet_caches()
+            shutil.rmtree(repo_dir)
+
+        messages.add_message(self.request, messages.SUCCESS, 'Repo Successfully Removed')
+        return self.next_url
+
+
+class ListGitReposView(CNCView):
+    template_name = 'bootstrapper/repos.html'
+    app_dir = 'bootstrapper'
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        snippets_dir = Path(os.path.join(settings.SRC_PATH, self.app_dir, 'snippets'))
+        repos = list()
+        for d in snippets_dir.rglob('./*'):
+            # git_dir = os.path.join(d, '.git')
+            git_dir = d.joinpath('.git')
+            if git_dir.exists() and git_dir.is_dir():
+                print(d)
+                repo_name = os.path.basename(d)
+                repo_detail = git_utils.get_repo_details(repo_name, d)
+                repos.append(repo_detail)
+                continue
+
+        context['repos'] = repos
+        return context

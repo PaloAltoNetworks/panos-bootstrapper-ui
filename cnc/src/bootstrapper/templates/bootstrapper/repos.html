@@ -1,0 +1,31 @@
+{% extends base_html %}
+{% load static %}
+
+{% block content %}
+
+<h2 class="mb-4">Imported Repositories</h2>
+
+{% for repo in repos %}
+
+{% if forloop.counter0|divisibleby:2 %}
+{% if forloop.first %}
+<div class="row mb-4">
+    {% else %}
+</div><div class="row mb-4">
+    {% endif %}
+    {% endif %}
+    <div class="col-sm-6">
+        <div class="card shadow-lg">
+            <div class="card-body">
+                <h5 class="card-title">{{ repo.name }}</h5>
+                <p class="card-text">{{ repo.description }}</p>
+                <a href="{{ repo.url }}" class="btn btn-primary">Detail</a>
+                <a href="/bootstrapper/update_repo/{{ repo.name }}" class="btn btn-secondary">Update</a>
+                <a href="/bootstrapper/remove_repo/{{ repo.name }}" class="btn btn-danger">Remove</a>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,25 @@
+name: import_bootstrapper_repo
+label: Import Git Repository Containing Bootstrap Templates
+description: Imports a git repository
+type: app
+extends:
+
+labels:
+  app_name: bootstrapper
+
+variables:
+- name: repo_name
+  description: Repository Name
+  default: Iron-Skillet
+  type_hint: text
+- name: url
+  description: Git Repository HTTPS URL
+  default: https://github.com/PaloAltoNetworks/iron-skillet.git
+  type_hint: text
+- name: branch
+  description: Branch
+  default: master
+  type_hint: text
+
+snippets:
+

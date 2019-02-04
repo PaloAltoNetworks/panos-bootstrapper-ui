@@ -62,7 +62,7 @@ views:
     class: CompleteWorkflowView
 
   - name: content_downloader
-    class: CNCBaseFormView
+    class: DownloadDynamicContentView
     menu: Dynamic Content
     menu_option: Download Latest Content
     attributes:
@@ -70,3 +70,29 @@ views:
       header: Dynamic Content
       title: Download Latest Content
       next_url: ''
+
+  - name: import
+    class: ImportGitRepoView
+    menu: Bootstrapper
+    menu_option: Import Bootstrap Templates from Git
+    attributes:
+      snippet: import_bootstrapper_repo
+      header: Import Repository
+      title: Enter a valid git url and desired branch below
+      next_url: '/'
+      help_text: >
+        This view imports a new git repository that contains bootstrap templates. This repo should contain at least
+        one .meta-cnc.yaml file to make those templates consumable.
+
+  - name: repos
+    class: ListGitReposView
+    menu: Bootstrapper
+    menu_option: Git Repositories
+
+  - name: update_repo
+    class: UpdateGitRepoView
+    parameter: repo_name
+
+  - name: remove_repo
+    class: RemoveGitRepoView
+    parameter: repo_name
