@@ -10,11 +10,7 @@ For details about the bootstrapping process, refer to the official
 
 ### Installation
 
-<<<<<<< HEAD
 1. Install docker and docker-compose
-=======
-1: Install docker
->>>>>>> develop
 
 2: clone or download this repository
 
@@ -51,6 +47,7 @@ Upgrading to the latest version should be quick and easy:
 ```bash
 cd panos-bootstrapper-ui
 git pull
+docker-compose build 
 docker-compose up --force-recreate
 ```
 
