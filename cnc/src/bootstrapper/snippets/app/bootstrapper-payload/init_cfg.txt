@@ -1,12 +1,18 @@
-type=dhcp-client
-ip-address={{ ip_address }}
-default-gateway={{ default_gateway }}
-netmask={{ netmask }}
-ipv6-address={{ ipv6_address }}
-ipv6-default-gateway={{ ipv6_default_gateway }}
+type={{ network_type }}
+{% if network_type == 'static' %}
+ip-address={{ ipv4_mgmt_address }}
+default-gateway={{ ipv4_default_gateway }}
+netmask={{ ipv4_mgmt_netmask }}
+{% else %}
+ip-address=
+default-gateway=
+netmask=
+{% endif %}
+ipv6-address=
+ipv6-default-gateway=
 hostname={{ hostname }}
 panorama-server={{ panorama_ip }}
-panorama-server-2={{ panorama_server_2 }}
+panorama-server-2=
 tplname={{ tpl_name }}
 dgname={{ dg_name }}
 dns-primary={{ dns_primary }}

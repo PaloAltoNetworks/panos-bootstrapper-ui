@@ -1,0 +1,27 @@
+{% extends base_html|default:'pan_cnc/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="jumbotron mt-4 shadow-lg">
+    <h1 class="display-3">
+        {{ title }}
+    </h1>
+    <p class="lead">
+        Pan-OS Bootstrap Archive builder tool. This tool will assist in building archives for physical hardware,
+        VM-Series in private cloud and VM-Series in public Cloud.
+    </p>
+    <p class="lead">
+        Refer to the <a href="https://docs.paloaltonetworks.com/pan-os/7-1/pan-os-new-features/management-features/bootstrapping-firewalls-for-rapid-deployment">
+        official documentation</a> for additional information.
+    </p>
+    <p class="lead">
+        {% if documentation_link %}
+        <a class="btn btn-primary btn-lg" href="{{ documentation_link }}" role="button">Learn more</a>
+        {% endif %}
+        &nbsp;
+        {% if next %}
+        <a class="btn btn-secondary btn-lg" href="/{{ app_dir }}/{{ next }}" role="button">Get Started</a>
+        {% endif %}
+    </p>
+</div>
+{%  endblock %}

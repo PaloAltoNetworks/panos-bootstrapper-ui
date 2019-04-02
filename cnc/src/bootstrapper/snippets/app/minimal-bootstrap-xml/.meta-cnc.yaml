@@ -1,0 +1,40 @@
+name: minimal_bootstrap_xml
+label: Minimal Bootstrap with Static Managment
+description: Initial bootstrap configuration for Pan-OS devices with Static management
+type: template
+extends:
+
+# grouping of like snippets for dynamic menu creation in pan-cnc
+labels:
+  template_category: panos_full
+
+variables:
+  - name: ADMINISTRATOR_USERNAME
+    description: Admin Username
+    default: admin
+    type_hint: text
+  - name: ADMINISTRATOR_PASSWORD
+    description: Admin Password
+    default:
+    type_hint: password
+  - name: hostname
+    description: Hostname
+    default: panos-01
+    type_hint: text
+  - name: ipv4_mgmt_address
+    description: Management IP Address
+    default: 192.168.1.1
+    type_hint: ip_address
+  - name: ipv4_mgmt_netmask
+    description: Management IP Netmask
+    default: 255.255.255.0
+    type_hint: ip_address
+  - name: ipv4_default_gateway
+    description: Default Gateway
+    default: 192.168.1.254
+    type_hint: ip_address
+
+
+snippets:
+  - name: bootstrap.xml
+    file: bootstrap.xml
