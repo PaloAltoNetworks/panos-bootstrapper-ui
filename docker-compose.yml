@@ -1,7 +1,7 @@
 version: '3'
 services:
   bootstrapper:
-    image: "nembery/panos_bootstrapper:v0.9"
+    image: "paloaltonetworks/panos-bootstrapper:v1.0"
     ports:
     - "5000:5000"
     volumes:
@@ -11,28 +11,11 @@ services:
     ports:
       - 80:80
     volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
       - $HOME/.pan_cnc:/root/.pan_cnc
       - $HOME/.panrc:/root/.panrc
-#  aframe:
-#    image: "nembery/aframe:v1.4"
-#    ports:
-#     - "8088:8000"
-#    volumes:
-#     - ./aframe/imports:/app/aframe/conf/imports
-#     - ./aframe/aframe.conf:/app/aframe/conf/aframe.conf
-#     - ./aframe/db.sqlite3:/app/aframe/db.sqlite3
-#     - $HOME/paloaltonetworks/
   content_downloader:
     image: "nembery/panos_content_downloader:latest"
     ports:
      - "5003:5003"
     volumes:
       - ./content_updates:/var/tmp/content_updates/
-#  docker_api:
-#    image: "alpine/socat"
-#    ports:
-#      - "127.0.0.1:2376:2375"
-#    volumes:
-#      - /var/run/docker.sock:/var/run/docker.sock
-#    command: ['tcp-listen:2375,fork,reuseaddr', 'unix-connect:/var/run/docker.sock']

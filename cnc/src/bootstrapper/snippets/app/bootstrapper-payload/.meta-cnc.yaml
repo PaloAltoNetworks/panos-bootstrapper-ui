@@ -49,18 +49,6 @@ variables:
         value: 'yes'
       - key: 'No, do not manage with Panorama'
         value: 'no'
-  - name: TARGET_IP
-    description: Panorama IP Address
-    default: 0.0.0.0
-    type_hint: ip_address
-  - name: TARGET_USERNAME
-    description: Panorama User
-    default: admin
-    type_hint: text
-  - name: TARGET_PASSWORD
-    description: Panorama Password
-    default: noway
-    type_hint: password
   - name: vm_auth_key
     description: Panorama VM Auth Key
     default: 123456789
@@ -97,6 +85,27 @@ variables:
     description: Auth Code
     default: Valid License Auth Code
     type_hint: text
+  - name: network_type
+    description: Management Connectivity
+    default: dhcp-client
+    type_hint: dropdown
+    dd_list:
+      - key: 'DHCP'
+        value: 'dhcp-client'
+      - key: 'Static IP Address'
+        value: 'static'
+  - name: ipv4_mgmt_address
+    description: Management IP Address
+    default: 192.168.1.1
+    type_hint: ip_address
+  - name: ipv4_mgmt_netmask
+    description: Management IP Netmask
+    default: 255.255.255.0
+    type_hint: ip_address
+  - name: ipv4_default_gateway
+    description: Default Gateway
+    default: 192.168.1.254
+    type_hint: ip_address
 
 snippets:
   - name: payload
