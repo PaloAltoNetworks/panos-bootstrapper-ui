@@ -24,7 +24,7 @@ variables:
       - key: 'GCP Bucket'
         value: 'gcp'
       - key: 'Openstack Archive'
-        value: 'tgz'
+        value: 'encoded_tgz'
       - key: 'VMWare'
         value: 'iso'
       - key: 'KVM'
