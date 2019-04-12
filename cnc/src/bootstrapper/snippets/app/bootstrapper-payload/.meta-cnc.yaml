@@ -106,6 +106,18 @@ variables:
     description: Default Gateway
     default: 192.168.1.254
     type_hint: ip_address
+  - name: panorama_ip
+    description: Panorama Host
+    default: 192.168.1.254
+    type_hint: ip_address
+  - name: panorama_user
+    description: Panorama API User
+    default: admin
+    type_hint: text
+  - name: panorama_password
+    description: Panorama API Password
+    default: ''
+    type_hint: password
 
 snippets:
   - name: payload
