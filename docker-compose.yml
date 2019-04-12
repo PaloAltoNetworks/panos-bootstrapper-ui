@@ -1,7 +1,7 @@
 version: '3'
 services:
   bootstrapper:
-    image: "paloaltonetworks/panos-bootstrapper:dev"
+    image: "paloaltonetworks/panos-bootstrapper:latest"
     ports:
     - "5000:5000"
     volumes:
