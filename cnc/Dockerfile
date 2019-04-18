@@ -2,16 +2,15 @@
 FROM python:3.6.8-alpine3.8
 
 LABEL description="Bootstrapper-UI"
-LABEL version="1.0"
-LABEL maintainer="nembery@paloaltonetworks.com"
+LABEL version="2.0"
+LABEL maintainer="sp-solutions@paloaltonetworks.com"
 
 WORKDIR /app
 ADD requirements.txt /app/requirements.txt
 ADD cnc/requirements.txt /app/cnc/requirements.txt
-RUN apk add --update --no-cache  git
-RUN apk add gcc musl-dev python3-dev libffi-dev openssl-dev docker
+RUN apk add --update --no-cache git gcc musl-dev python3-dev libffi-dev openssl-dev
 RUN pip install --upgrade pip
-RUN pip install -r cnc/requirements.txt
+#RUN pip install -r cnc/requirements.txt
 RUN pip install -r requirements.txt
 COPY src /app/src
 COPY cnc /app/cnc
