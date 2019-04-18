@@ -15,7 +15,6 @@ ADD requirements.txt /app/requirements.txt
 ADD cnc/requirements.txt /app/cnc/requirements.txt
 RUN apk add --update --no-cache git gcc musl-dev python3-dev libffi-dev openssl-dev \
     && pip install --upgrade pip && pip install --no-cache-dir --no-use-pep517 -r requirements.txt \
-    && pip install --no-cache-dir --no-use-pep517 -r cnc/requirements.txt \
     && apk del --no-cache gcc \
     && if [ -f /app/cnc/db.sqlite3 ]; then rm /app/cnc/db.sqlite3; fi \
     && python /app/cnc/manage.py migrate && python /app/cnc/manage.py shell -c "from django.contrib.auth.models import User; User.objects.create_superuser('${CNC_USERNAME}', 'admin@example.com', '${CNC_PASSWORD}')"
