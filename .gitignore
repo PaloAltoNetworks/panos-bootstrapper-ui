@@ -2,6 +2,7 @@
 .DS_Store
 aframe/db.sqlite3
 venv
+venv*
 *pyc
 **/snippets/**/
 !**/snippets/app

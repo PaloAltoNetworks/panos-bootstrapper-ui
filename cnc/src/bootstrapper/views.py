@@ -112,12 +112,12 @@ class GetCloudAuthView(BootstrapWorkflowView):
 
 class BootstrapStep03View(BootstrapWorkflowView):
     title = 'Configure Panorama Server'
-    fields_to_render = ['TARGET_IP', 'TARGET_USERNAME', 'TARGET_PASSWORD']
+    fields_to_render = ['panorama_ip', 'panorama_user', 'panorama_password']
 
     def form_valid(self, form):
-        target_ip = self.get_value_from_workflow('TARGET_IP', '')
-        target_username = self.get_value_from_workflow('TARGET_USERNAME', '')
-        target_password = self.get_value_from_workflow('TARGET_PASSWORD', '')
+        target_ip = self.get_value_from_workflow('panorama_ip', '')
+        target_username = self.get_value_from_workflow('panorama_user', '')
+        target_password = self.get_value_from_workflow('panorama_password', '')
         p = pan_utils.panos_login(target_ip, target_username, target_password)
         if p is None:
             results = dict()
@@ -362,12 +362,13 @@ class ImportGitRepoView(CNCBaseFormView):
 
         # we are going to keep the snippets in the snippets dir in the panhandler app
         # get the dir where all apps are installed
-        src_dir = settings.SRC_PATH
+        # src_dir = settings.SRC_PATH
         # get the panhandler app dir
-        panhandler_dir = os.path.join(src_dir, self.app_dir)
+        # panhandler_dir = os.path.join(src_dir, self.app_dir)
         # get the snippets dir under that
-        snippets_dir = os.path.join(panhandler_dir, 'snippets')
+        # snippets_dir = os.path.join(panhandler_dir, 'snippets')
         # figure out what our new repo / snippet dir will be
+        snippets_dir = os.path.join(os.path.expanduser('~/.pan_cnc'), 'bootstrapper', 'repositories')
         new_repo_snippets_dir = os.path.join(snippets_dir, repo_name)
 
         # where to clone from
@@ -381,7 +382,7 @@ class ImportGitRepoView(CNCBaseFormView):
             messages.add_message(self.request, messages.ERROR, 'Could not Import Repository')
         else:
             print('Invalidating snippet cache')
-            snippet_utils.invalidate_snippet_caches()
+            snippet_utils.invalidate_snippet_caches(self.app_dir)
 
             messages.add_message(self.request, messages.INFO, 'Imported Repository Successfully')
 
@@ -397,11 +398,13 @@ class UpdateGitRepoView(CNCBaseAuth, RedirectView):
         repo_name = kwargs['repo_name']
         # we are going to keep the snippets in the snippets dir in the panhandler app
         # get the dir where all apps are installed
-        src_dir = settings.SRC_PATH
+        # src_dir = settings.SRC_PATH
         # get the panhandler app dir
-        panhandler_dir = os.path.join(src_dir, self.app_dir)
+        # panhandler_dir = os.path.join(src_dir, self.app_dir)
         # get the snippets dir under that
-        snippets_dir = os.path.join(panhandler_dir, 'snippets')
+        # snippets_dir = os.path.join(panhandler_dir, 'snippets')
+        snippets_dir = os.path.join(os.path.expanduser('~/.pan_cnc'), 'bootstrapper', 'repositories')
+
         repo_dir = os.path.join(snippets_dir, repo_name)
 
         msg = git_utils.update_repo(repo_dir)
@@ -409,7 +412,7 @@ class UpdateGitRepoView(CNCBaseAuth, RedirectView):
             level = messages.ERROR
         else:
             print('Invalidating snippet cache')
-            snippet_utils.invalidate_snippet_caches()
+            snippet_utils.invalidate_snippet_caches(self.app_dir)
             level = messages.INFO
 
         messages.add_message(self.request, level, msg)
@@ -426,15 +429,16 @@ class RemoveGitRepoView(CNCBaseAuth, RedirectView):
         # get the dir where all apps are installed
         src_dir = settings.SRC_PATH
         # get the panhandler app dir
-        panhandler_dir = os.path.join(src_dir, self.app_dir)
+        # panhandler_dir = os.path.join(src_dir, self.app_dir)
         # get the snippets dir under that
-        snippets_dir = os.path.join(panhandler_dir, 'snippets')
+        # snippets_dir = os.path.join(panhandler_dir, 'snippets')
+        snippets_dir = os.path.join(os.path.expanduser('~/.pan_cnc'), 'bootstrapper', 'repositories')
         repo_dir = os.path.abspath(os.path.join(snippets_dir, repo_name))
 
         if snippets_dir in repo_dir:
             print(f'Removing repo {repo_name}')
             print('Invalidating snippet cache')
-            snippet_utils.invalidate_snippet_caches()
+            snippet_utils.invalidate_snippet_caches(self.app_dir)
             shutil.rmtree(repo_dir)
 
         messages.add_message(self.request, messages.SUCCESS, 'Repo Successfully Removed')
@@ -448,7 +452,8 @@ class ListGitReposView(CNCView):
     def get_context_data(self, **kwargs):
 
         context = super().get_context_data(**kwargs)
-        snippets_dir = Path(os.path.join(settings.SRC_PATH, self.app_dir, 'snippets'))
+        # snippets_dir = Path(os.path.join(settings.SRC_PATH, self.app_dir, 'snippets'))
+        snippets_dir = Path(os.path.join(os.path.expanduser('~/.pan_cnc'), 'bootstrapper', 'repositories'))
         repos = list()
         for d in snippets_dir.rglob('./*'):
             # git_dir = os.path.join(d, '.git')
@@ -456,7 +461,7 @@ class ListGitReposView(CNCView):
             if git_dir.exists() and git_dir.is_dir():
                 print(d)
                 repo_name = os.path.basename(d)
-                repo_detail = git_utils.get_repo_details(repo_name, d)
+                repo_detail = git_utils.get_repo_details(repo_name, d, self.app_dir)
                 repos.append(repo_detail)
                 continue
 

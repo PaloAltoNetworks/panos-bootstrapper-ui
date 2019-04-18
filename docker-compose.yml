@@ -1,7 +1,7 @@
 version: '3'
 services:
   bootstrapper:
-    image: "nembery/panos_bootstrapper:v0.9"
+    image: "paloaltonetworks/panos-bootstrapper:latest"
     ports:
     - "127.0.0.1:5001:5000"
     volumes:

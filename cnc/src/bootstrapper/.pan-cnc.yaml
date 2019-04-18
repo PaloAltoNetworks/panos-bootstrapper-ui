@@ -4,8 +4,8 @@ label: Pan-OS Bootstrapper
 repositories:
   - name: Iron-Skillet
     url: https://github.com/PaloAltoNetworks/iron-skillet.git
-    branch: 81dev
-    destination_directory: iron-skillet-81dev
+    branch: panos_v8.1
+    destination_directory: iron-skillet-81
 
 views:
   - name: ''
@@ -17,13 +17,33 @@ views:
     context:
       title: Bootstrapper
       description: inline
-      documentation_link: http://bootstrapper.readthedocs.io
+      documentation_link: https://panos-bootstrapper.readthedocs.io/en/latest/
       next: build
 
   - name: build
     class: BootstrapWorkflowView
     menu: Bootstrapper
     menu_option: Build Bootstrap Archive
+    attributes:
+      help_text: >
+        This tool allows you to build a bootstrap archive for PAN-OS devices.
+      help_link_title: Complete documentation
+      help_link: https://panos-bootstrapper.readthedocs.io/en/latest/
+
+  - name: 'configure_management'
+    class: ConfigureManagementView
+    attributes:
+      help_text: >
+        Choose how you want the management interface IP address to be configured. This will configure the 'type'
+        field in the init-cfg.txt file. Most cloud environments require DHCP.
+        * If you use a custom bootstrap.xml file, ensure this option matches what is configured there.
+
+  - name: 'configure_management_ip'
+    class: ConfigureManagementStaticView
+    attributes:
+      help_text: >
+        Configure the static IP Address information for the management interface on the PAN-OS device. This will
+        configure the appropriate fields in the init-cfg.txt file.
 
   - name: 'configure_management'
     class: ConfigureManagementView
@@ -36,30 +56,71 @@ views:
 
   - name: 'include_content'
     class: DynamicContentView
+    attributes:
+      help_text: >
+        Use this tool to download and cache the latest dynamic content from the Palo Alto Networks support site.
+        The username and password below will be your login information to the support site. Once a dynamic update
+        has been updated, it will be cached indefinitely, however, only the most recent version will be included
+        in the archive though.
 
   - name: 'download_content'
     class: DownloadDynamicContentView
+    attributes:
+      help_text: >
+        Use this tool to download and cache the latest dynamic content from the Palo Alto Networks support site.
+        The username and password below will be your login information to the support site. Once a dynamic update
+        has been updated, it will be cached indefinitely, however, only the most recent version will be included
+        in the archive though.
 
-  - name: 'step02'
-    class: BootstrapStep02View
+#  - name: 'step02'
+#    class: BootstrapStep02View
 
   - name: 'step03'
     class: BootstrapStep03View
+    attributes:
+      help_text: >
+        In order for a newly bootstrapped PAN-OS device to be managed by a Panorama server, a 'vm-auth-key' must
+        first be generated on the Panorama server. This screen will use the provided authentication information to
+        instruct the server to create this vm-auth-key, which will then be included in the bootstrap archive.
+      help_link_title: Official Documentation
+      help_link: https://docs.paloaltonetworks.com/vm-series/8-1/vm-series-deployment/bootstrap-the-vm-series-firewall/generate-the-vm-auth-key-on-panorama.html
 
   - name: 'step04'
     class: BootstrapStep04View
 
   - name: choose_bootstrap
     class: ChooseBootstrapXmlView
+    attributes:
+      help_text: >
+        Choose whether to include a custom bootstrap. This will also load any bootstrap.xml from imported Git
+        repositories. Any .meta-cnc.yaml file with a 'type' of 'template' and a label key of 'template_category'
+        and value of 'panos_full' will appear here in this list.
+      help_link_title: Creating a Bootstrap.xml file
+      help_link: https://docs.paloaltonetworks.com/vm-series/8-1/vm-series-deployment/bootstrap-the-vm-series-firewall/create-the-bootstrapxml-file
 
   - name: upload_bootstrap
     class: UploadBootstrapView
+    attributes:
+      help_text: >
+        This form allows you to upload a complete bootstrap.xml file. Ensure you have customized this file for the device
+        to be booted.
+      help_link_title: Creating a Bootstrap.xml file
+      help_link: https://docs.paloaltonetworks.com/vm-series/8-1/vm-series-deployment/bootstrap-the-vm-series-firewall/create-the-bootstrapxml-file
 
   - name: configure_bootstrap
     class: ConfigureBootstrapView
+    attributes:
+      help_text: >
+        Each custom bootstrap Skillet can define mulitple variables that you may customized before deployment. This
+        screen will display each of those variables that must be completed. Some values may be pre-populated by loading
+        an environment that contains a secret with the same variable name as one found in this bootstrap skillet.
 
   - name: complete
     class: CompleteWorkflowView
+    attributes:
+      help_text: >
+        Enter a valid Auth-Code below. If you do not have an auth-code you may leave this blank and license the device
+        after it has booted. To get a valid Auth-Code, contact your Account Manager or Sales Engineer.
 
   - name: content_downloader
     class: DownloadDynamicContentView
@@ -70,6 +131,11 @@ views:
       header: Dynamic Content
       title: Download Latest Content
       next_url: ''
+      help_text: >
+        Use this tool to download and cache the latest dynamic content from the Palo Alto Networks support site.
+        The username and password below will be your login information to the support site. Once a dynamic update
+        has been updated, it will be cached indefinitely, however, only the most recent version will be included
+        in the archive though.
 
   - name: import
     class: ImportGitRepoView
@@ -83,6 +149,8 @@ views:
       help_text: >
         This view imports a new git repository that contains bootstrap templates. This repo should contain at least
         one .meta-cnc.yaml file to make those templates consumable.
+      help_link_title: Managing Bootstrap files with Git
+      help_link: https://panhandler.readthedocs.io/en/latest/environments.html
 
   - name: repos
     class: ListGitReposView
