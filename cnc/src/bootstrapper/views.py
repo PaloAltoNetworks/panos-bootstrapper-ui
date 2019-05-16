@@ -1,6 +1,3 @@
-import re
-from base64 import urlsafe_b64encode
-
 import json
 import os
 import re
@@ -10,7 +7,6 @@ from pathlib import Path
 
 import requests
 from django import forms
-from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse
 from django.views.generic import RedirectView
@@ -304,6 +300,7 @@ class CompleteWorkflowView(BootstrapWorkflowView):
         resp = requests.post(f'http://{bootstrapper_host}:{bootstrapper_port}/generate_bootstrap_package',
                              json=json.loads(payload)
                              )
+        content_type = ''
         if 'Content-Type' in resp.headers:
             content_type = resp.headers['Content-Type']
         if 'Content-Disposition' in resp.headers:
@@ -374,7 +371,7 @@ class ImportGitRepoView(CNCBaseFormView):
         # where to clone from
         clone_url = url
         if 'github' in url.lower():
-            details = git_utils.get_repo_upstream_details(repo_name, url)
+            details = git_utils.get_repo_upstream_details(repo_name, url, self.app_dir)
             if 'clone_url' in details:
                 clone_url = details['clone_url']
 
@@ -383,11 +380,12 @@ class ImportGitRepoView(CNCBaseFormView):
         else:
             print('Invalidating snippet cache')
             snippet_utils.invalidate_snippet_caches(self.app_dir)
+            cnc_utils.clear_long_term_cache(self.app_dir)
 
             messages.add_message(self.request, messages.INFO, 'Imported Repository Successfully')
 
         # return render(self.request, 'pan_cnc/results.html', context)
-        return HttpResponseRedirect(self.next_url)
+        return HttpResponseRedirect('/bootstrapper/repos')
 
 
 class UpdateGitRepoView(CNCBaseAuth, RedirectView):
@@ -427,7 +425,6 @@ class RemoveGitRepoView(CNCBaseAuth, RedirectView):
         repo_name = kwargs['repo_name']
         # we are going to keep the snippets in the snippets dir in the panhandler app
         # get the dir where all apps are installed
-        src_dir = settings.SRC_PATH
         # get the panhandler app dir
         # panhandler_dir = os.path.join(src_dir, self.app_dir)
         # get the snippets dir under that
@@ -441,6 +438,7 @@ class RemoveGitRepoView(CNCBaseAuth, RedirectView):
             snippet_utils.invalidate_snippet_caches(self.app_dir)
             shutil.rmtree(repo_dir)
 
+        cnc_utils.clear_long_term_cache(self.app_dir)
         messages.add_message(self.request, messages.SUCCESS, 'Repo Successfully Removed')
         return self.next_url
 
@@ -454,16 +452,23 @@ class ListGitReposView(CNCView):
         context = super().get_context_data(**kwargs)
         # snippets_dir = Path(os.path.join(settings.SRC_PATH, self.app_dir, 'snippets'))
         snippets_dir = Path(os.path.join(os.path.expanduser('~/.pan_cnc'), 'bootstrapper', 'repositories'))
-        repos = list()
-        for d in snippets_dir.rglob('./*'):
-            # git_dir = os.path.join(d, '.git')
-            git_dir = d.joinpath('.git')
-            if git_dir.exists() and git_dir.is_dir():
-                print(d)
-                repo_name = os.path.basename(d)
-                repo_detail = git_utils.get_repo_details(repo_name, d, self.app_dir)
-                repos.append(repo_detail)
-                continue
 
-        context['repos'] = repos
+        repos = cnc_utils.get_long_term_cached_value(self.app_dir, 'imported_repositories')
+        if repos is not None:
+            context['repos'] = repos
+        else:
+            repos = list()
+            for d in snippets_dir.iterdir():
+                git_dir = d.joinpath('.git')
+                if git_dir.exists() and git_dir.is_dir():
+                    repo_detail = git_utils.get_repo_details(d.name, d, self.app_dir)
+                    repos.append(repo_detail)
+                    continue
+
+            # cache the repos list for 1 week. this will be cleared when we import a new repository or otherwise
+            # change the repo list somehow
+            cnc_utils.set_long_term_cached_value(self.app_dir, 'imported_repositories', repos, 604800,
+                                                 'imported_git_repos')
+            context['repos'] = repos
+
         return context
