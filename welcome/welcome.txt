@@ -1,6 +1,6 @@
 ###########################################################
 #
-#        Welcome to the Pan-OS Bootstrapper Tool
+#        Welcome to the PAN-OS Bootstrapper Tool
 #
 #        To begin, open a web browser and browse to:
 #
