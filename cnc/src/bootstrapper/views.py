@@ -380,11 +380,12 @@ class ImportGitRepoView(CNCBaseFormView):
         else:
             print('Invalidating snippet cache')
             snippet_utils.invalidate_snippet_caches(self.app_dir)
+            cnc_utils.clear_long_term_cache(self.app_dir)
 
             messages.add_message(self.request, messages.INFO, 'Imported Repository Successfully')
 
         # return render(self.request, 'pan_cnc/results.html', context)
-        return HttpResponseRedirect(self.next_url)
+        return HttpResponseRedirect('/bootstrapper/repos')
 
 
 class UpdateGitRepoView(CNCBaseAuth, RedirectView):
@@ -437,6 +438,7 @@ class RemoveGitRepoView(CNCBaseAuth, RedirectView):
             snippet_utils.invalidate_snippet_caches(self.app_dir)
             shutil.rmtree(repo_dir)
 
+        cnc_utils.clear_long_term_cache(self.app_dir)
         messages.add_message(self.request, messages.SUCCESS, 'Repo Successfully Removed')
         return self.next_url
 
