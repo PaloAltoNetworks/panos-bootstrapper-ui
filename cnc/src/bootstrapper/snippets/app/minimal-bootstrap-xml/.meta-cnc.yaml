@@ -1,6 +1,6 @@
 name: minimal_bootstrap_xml
 label: Minimal Bootstrap with Static Managment
-description: Initial bootstrap configuration for Pan-OS devices with Static management
+description: Initial bootstrap configuration for PAN-OS devices with Static management
 type: template
 extends:
 

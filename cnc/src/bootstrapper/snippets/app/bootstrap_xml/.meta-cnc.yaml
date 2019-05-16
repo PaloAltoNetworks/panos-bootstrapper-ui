@@ -1,6 +1,6 @@
 name: bootstrap_xml
 label: Bootstrap.xml
-description: Initial bootstrap configuration for Pan-OS devices
+description: Initial bootstrap configuration for PAN-OS devices
 type: template
 extends:
 variables:

@@ -1,5 +1,5 @@
 name: bootstrapper
-label: Pan-OS Bootstrapper
+label: PAN-OS Bootstrapper
 
 repositories:
   - name: Iron-Skillet
