@@ -54,11 +54,11 @@ variables:
     default: 123456789
     type_hint: text
   - name: aws_key
-    description: Amazon S3 API Key
+    description: AWS Acces Key
     default: ""
     type_hint: text
   - name: aws_secret
-    description: Amazon S3 API Secret
+    description: AWS Secret Key
     default: ""
     type_hint: password
   - name: aws_location
