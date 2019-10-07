@@ -8,7 +8,9 @@ from pathlib import Path
 import requests
 from django import forms
 from django.contrib import messages
-from django.shortcuts import render, HttpResponseRedirect, HttpResponse
+from django.shortcuts import HttpResponse
+from django.shortcuts import HttpResponseRedirect
+from django.shortcuts import render
 from django.views.generic import RedirectView
 
 from pan_cnc.lib import cnc_utils
@@ -16,7 +18,9 @@ from pan_cnc.lib import git_utils
 from pan_cnc.lib import pan_utils
 from pan_cnc.lib import snippet_utils
 from pan_cnc.lib.exceptions import TargetConnectionException
-from pan_cnc.views import CNCBaseFormView, CNCView, CNCBaseAuth
+from pan_cnc.views import CNCBaseAuth
+from pan_cnc.views import CNCBaseFormView
+from pan_cnc.views import CNCView
 
 
 class BootstrapWorkflowView(CNCBaseFormView):
@@ -36,50 +40,50 @@ class BootstrapWorkflowView(CNCBaseFormView):
             return HttpResponseRedirect('choose_bootstrap')
 
 
-class DynamicContentView(BootstrapWorkflowView):
-    title = 'Include Dynamic Content'
-    fields_to_render = ['include_dynamic_content']
-
-    def form_valid(self, form):
-        if self.get_value_from_workflow('include_dynamic_content', 'no') == 'yes':
-            return HttpResponseRedirect('download_content')
-        else:
-            return HttpResponseRedirect('configure_management')
-
-
-class DownloadDynamicContentView(CNCBaseFormView):
-    header = 'Build Bootstrap Archive'
-    title = 'Dynamic Content Authentication'
-    snippet = 'content_downloader'
-
-    def form_valid(self, form):
-        payload = self.render_snippet_template()
-
-        # get the content_downloader host and port from the .panrc file, environrment, or default name lookup
-        # docker-compose will host content_downloader under the 'content_downloader' domain name
-        content_downloader_host = cnc_utils.get_config_value('CONTENT_DOWNLOADER_HOST', 'content_downloader')
-        content_downloader_port = cnc_utils.get_config_value('CONTENT_DOWNLOADER_PORT', '5003')
-
-        resp = requests.post(f'http://{content_downloader_host}:{content_downloader_port}/download_content',
-                             json=json.loads(payload)
-                             )
-
-        print(f'Download returned: {resp.status_code}')
-        if resp.status_code != 200:
-            messages.add_message(self.request, messages.ERROR, f'Could not download dynamic content!')
-
-        if 'Content-Disposition' in resp.headers:
-            filename = resp.headers['Content-Disposition'].split('=')[1]
-            messages.add_message(self.request, messages.INFO, f'Downloaded Dynamic Content file: {filename}')
-
-        return HttpResponseRedirect('configure_management')
+# class DynamicContentView(BootstrapWorkflowView):
+#     title = 'Include Dynamic Content'
+#     fields_to_render = ['include_dynamic_content']
+#
+#     def form_valid(self, form):
+#         if self.get_value_from_workflow('include_dynamic_content', 'no') == 'yes':
+#             return HttpResponseRedirect('download_content')
+#         else:
+#             return HttpResponseRedirect('configure_management')
+#
+#
+# class DownloadDynamicContentView(CNCBaseFormView):
+#     header = 'Build Bootstrap Archive'
+#     title = 'Dynamic Content Authentication'
+#     snippet = 'content_downloader'
+#
+#     def form_valid(self, form):
+#         payload = self.render_snippet_template()
+#
+#         # get the content_downloader host and port from the .panrc file, environrment, or default name lookup
+#         # docker-compose will host content_downloader under the 'content_downloader' domain name
+#         content_downloader_host = cnc_utils.get_config_value('CONTENT_DOWNLOADER_HOST', 'content_downloader')
+#         content_downloader_port = cnc_utils.get_config_value('CONTENT_DOWNLOADER_PORT', '5003')
+#
+#         resp = requests.post(f'http://{content_downloader_host}:{content_downloader_port}/download_content',
+#                              json=json.loads(payload)
+#                              )
+#
+#         print(f'Download returned: {resp.status_code}')
+#         if resp.status_code != 200:
+#             messages.add_message(self.request, messages.ERROR, f'Could not download dynamic content!')
+#
+#         if 'Content-Disposition' in resp.headers:
+#             filename = resp.headers['Content-Disposition'].split('=')[1]
+#             messages.add_message(self.request, messages.INFO, f'Downloaded Dynamic Content file: {filename}')
+#
+#         return HttpResponseRedirect('configure_management')
 
 
 class GetCloudAuthView(BootstrapWorkflowView):
     title = 'Enter Cloud Auth Information'
     fields_to_render = []
 
-    def generate_dynamic_form(self):
+    def generate_dynamic_form(self, data=None):
         deployment_type = self.get_value_from_workflow('deployment_type', '')
         if deployment_type == 's3':
             self.fields_to_render += ['aws_key', 'aws_secret', 'aws_location']
@@ -87,7 +91,7 @@ class GetCloudAuthView(BootstrapWorkflowView):
             self.fields_to_render += ['azure_storage_account', 'azure_access_key']
         elif deployment_type == 'gcp':
             self.fields_to_render += ['gcp_project_id', 'gcp_access_token']
-        return super().generate_dynamic_form()
+        return super().generate_dynamic_form(data)
 
     def form_valid(self, form):
 
@@ -136,7 +140,7 @@ class BootstrapStep03View(BootstrapWorkflowView):
         else:
             print('Could not get VM Auth key from Panorama!')
 
-        return HttpResponseRedirect('include_content')
+        return HttpResponseRedirect('complete')
 
 
 class BootstrapStep04View(BootstrapWorkflowView):
@@ -173,7 +177,12 @@ class ChooseBootstrapXmlView(BootstrapWorkflowView):
     title = 'Include Custom Bootstrap.xml?'
     fields_to_render = []
 
-    def generate_dynamic_form(self):
+    # override the post method as we do not have a snippet defined...
+    def post(self, request, *args, **kwargs):
+        form = self.generate_dynamic_form()
+        return self.form_valid(form)
+
+    def generate_dynamic_form(self, data=None):
         dynamic_form = forms.Form()
 
         # load all templates that report that they are a full panos configuration
@@ -217,7 +226,7 @@ class ChooseBootstrapXmlView(BootstrapWorkflowView):
             return HttpResponseRedirect('upload_bootstrap')
         elif cb == 'none':
             self.save_value_to_workflow('bootstrap_string', '')
-            return HttpResponseRedirect('include_content')
+            return HttpResponseRedirect('complete')
         else:
             # custom bootstrap is set to some other value from a snippet
             return HttpResponseRedirect('configure_bootstrap')
@@ -247,14 +256,19 @@ class ConfigureBootstrapView(CNCBaseFormView):
             encoded_bootstrap_string = urlsafe_b64encode(bsb)
             self.save_value_to_workflow('bootstrap_string', encoded_bootstrap_string.decode('utf-8'))
 
-        return HttpResponseRedirect('include_content')
+        return HttpResponseRedirect('complete')
 
 
 class UploadBootstrapView(BootstrapWorkflowView):
     title = 'Upload Custom Bootstrap.xml'
     fields_to_render = []
 
-    def generate_dynamic_form(self):
+    # override the post method as we do not have a snippet defined...
+    def post(self, request, *args, **kwargs):
+        form = self.generate_dynamic_form()
+        return self.form_valid(form)
+
+    def generate_dynamic_form(self, data=None):
         dynamic_form = forms.Form()
         dynamic_form.fields['bootstrap_string'] = forms.CharField(widget=forms.Textarea,
                                                                   label='Bootstrap XML Contents',
@@ -267,7 +281,7 @@ class UploadBootstrapView(BootstrapWorkflowView):
             bsb = bytes(bs, 'utf-8')
             encoded_bootstrap_string = urlsafe_b64encode(bsb)
             self.save_value_to_workflow('bootstrap_string', encoded_bootstrap_string.decode('utf-8'))
-        return HttpResponseRedirect('include_content')
+        return HttpResponseRedirect('complete')
 
 
 class CompleteWorkflowView(BootstrapWorkflowView):
@@ -297,8 +311,16 @@ class CompleteWorkflowView(BootstrapWorkflowView):
         bootstrapper_port = cnc_utils.get_config_value('BOOTSTRAPPER_PORT', '5000')
         print(f'Using bootstrapper_host: {bootstrapper_host}')
         print(f'Using bootstrapper_port: {bootstrapper_port}')
+        try:
+            json_payload = json.loads(payload)
+            print('Using payload: %s' % payload)
+        except json.decoder.JSONDecodeError as je:
+            print(f'Could not encode payload! {je}')
+            messages.add_message(self.request, messages.ERROR, 'Could not Encode payload for Bootstrapper Service')
+            return HttpResponseRedirect('error')
+
         resp = requests.post(f'http://{bootstrapper_host}:{bootstrapper_port}/generate_bootstrap_package',
-                             json=json.loads(payload)
+                             json=json_payload
                              )
         content_type = ''
         if 'Content-Type' in resp.headers:
