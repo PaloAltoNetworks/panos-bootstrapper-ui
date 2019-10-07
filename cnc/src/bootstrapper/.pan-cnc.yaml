@@ -122,20 +122,20 @@ views:
         Enter a valid Auth-Code below. If you do not have an auth-code you may leave this blank and license the device
         after it has booted. To get a valid Auth-Code, contact your Account Manager or Sales Engineer.
 
-  - name: content_downloader
-    class: DownloadDynamicContentView
-    menu: Dynamic Content
-    menu_option: Download Latest Content
-    attributes:
-      snippet: content_downloader
-      header: Dynamic Content
-      title: Download Latest Content
-      next_url: ''
-      help_text: >
-        Use this tool to download and cache the latest dynamic content from the Palo Alto Networks support site.
-        The username and password below will be your login information to the support site. Once a dynamic update
-        has been updated, it will be cached indefinitely, however, only the most recent version will be included
-        in the archive though.
+#  - name: content_downloader
+#    class: DownloadDynamicContentView
+#    menu: Dynamic Content
+#    menu_option: Download Latest Content
+#    attributes:
+#      snippet: content_downloader
+#      header: Dynamic Content
+#      title: Download Latest Content
+#      next_url: ''
+#      help_text: >
+#        Use this tool to download and cache the latest dynamic content from the Palo Alto Networks support site.
+#        The username and password below will be your login information to the support site. Once a dynamic update
+#        has been updated, it will be cached indefinitely, however, only the most recent version will be included
+#        in the archive though.
 
   - name: import
     class: ImportGitRepoView

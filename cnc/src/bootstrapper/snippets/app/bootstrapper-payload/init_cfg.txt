@@ -1,12 +1,8 @@
-type={{ network_type }}
+type={{ network_type|default('dhcp-client') }}
 {% if network_type == 'static' %}
 ip-address={{ ipv4_mgmt_address }}
 default-gateway={{ ipv4_default_gateway }}
 netmask={{ ipv4_mgmt_netmask }}
-{% else %}
-ip-address=
-default-gateway=
-netmask=
 {% endif %}
 ipv6-address=
 ipv6-default-gateway=

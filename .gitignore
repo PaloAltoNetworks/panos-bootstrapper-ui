@@ -9,3 +9,4 @@ venv*
 !**/snippets/app/**
 !**/snippets/app/**/*
 __pycache__/*
+docker-compose-dev.yml
