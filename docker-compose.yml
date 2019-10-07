@@ -15,12 +15,12 @@ services:
     volumes:
       - $HOME/.pan_cnc:/root/.pan_cnc
       - $HOME/.panrc:/root/.panrc
-  content_downloader:
-    image: "nembery/panos_content_downloader:latest"
-    ports:
-     - "5003:5003"
-    volumes:
-      - ./content_updates:/var/tmp/content_updates/
+#  content_downloader:
+#    image: "nembery/panos_content_downloader:latest"
+#    ports:
+#     - "5003:5003"
+#    volumes:
+#      - ./content_updates:/var/tmp/content_updates/
   welcome:
     image: alpine
     depends_on:
